@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Login — SchoolMasterPro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="smp-supabase.js"></script>
+  <style>
+    body{font-family:'Inter',system-ui,sans-serif;background:#0f1117;min-height:100vh;display:flex;align-items:center;justify-content:center;}
+    .card{background:#fff;border-radius:16px;padding:40px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+    input{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;transition:border-color .15s;}
+    input:focus{border-color:#1a6b3c;}
+    .btn{width:100%;padding:12px;background:#1a6b3c;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;}
+    .btn:hover{background:#155c32;}
+    .btn:disabled{opacity:.6;cursor:not-allowed;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="width:44px;height:44px;background:#1a6b3c;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V7L12 3z" fill="white"/><path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div style="font-size:20px;font-weight:700;color:#0f1117;">SchoolMasterPro</div>
+      <div style="font-size:13px;color:#64748b;margin-top:4px;">Sign in to your school account</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Email Address</label>
+        <input type="email" id="email" placeholder="admin@yourschool.edu.ng" />
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Password</label>
+        <input type="password" id="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()" />
+      </div>
+      <div id="error-msg" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 12px;font-size:13px;color:#dc2626;"></div>
+      <button class="btn" id="login-btn" onclick="login()">Sign In</button>
+    </div>
+
+    <div style="text-align:center;margin-top:20px;font-size:13px;color:#64748b;">
+      Don't have an account? <a href="register.html" style="color:#1a6b3c;font-weight:600;">Register your school</a>
+    </div>
+    <div style="text-align:center;margin-top:8px;font-size:12px;">
+      <a href="admin-login.html" style="color:#94a3b8;font-size:11px;">Platform Admin →</a>
+    </div>
+  </div>
+
+<script>
+async function login() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('login-btn');
+  const errBox = document.getElementById('error-msg');
+  errBox.style.display = 'none';
+  if (!email || !password) { showErr('Please enter your email and password.'); return; }
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle"></span>Signing in…';
+  const { error } = await SMP.auth.signIn(email, password);
+  if (error) { showErr(error.message); btn.disabled = false; btn.textContent = 'Sign In'; return; }
+  await SMP.usage.track('login');
+  window.location.href = 'index.html';
+}
+function showErr(msg) {
+  const b = document.getElementById('error-msg');
+  b.textContent = msg; b.style.display = 'block';
+}
+// Redirect if already logged in
+SMP.auth.getSession().then(s => { if (s) window.location.href = 'index.html'; });
+</script>
+</body>
+</html>

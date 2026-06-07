@@ -1,0 +1,51 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Student Profile — SchoolMasterPro</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="smp-supabase.js"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+<div class="min-h-screen flex">
+  <aside class="w-56 bg-gray-900 text-white flex flex-col fixed inset-y-0 z-30">
+    <div class="p-4 border-b border-gray-700"><div class="flex items-center gap-2"><div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center text-xs font-bold">S</div><span class="font-semibold text-sm">SchoolMasterPro</span></div><p class="text-xs text-gray-400 mt-1" id="school-name-nav">Loading...</p></div>
+    <nav class="flex-1 p-3 space-y-1 text-sm overflow-y-auto">
+      <a href="index.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📊 Dashboard</a>
+      <a href="students.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👥 Students</a>
+      <a href="scores.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📝 Scores</a>
+      <a href="fees.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">💰 Fees</a>
+      <a href="receipts.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🧾 Receipts</a>
+      <a href="reports.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📄 Reports</a>
+      <a href="staff.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👤 Staff</a>
+      <a href="bulk-upload.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📥 Bulk Upload</a>
+      <a href="notifications.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔔 Notifications</a>
+      <a href="documents.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📁 Documents</a>
+      <a href="promotion.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🎓 Promotion</a>
+      <a href="term-settings.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">⚙️ Settings</a>
+      <a href="term-comparison.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📈 Term Compare</a>
+      <a href="transcript.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📜 Transcript</a>
+      <a href="audit.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔍 Audit Log</a>
+    </nav>
+    <div class="p-3 border-t border-gray-700"><button onclick="SMP.auth.signOut().then(()=>location.href='login.html')" class="w-full text-left flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white text-sm">🚪 Sign Out</button></div>
+  </aside>
+  <main class="ml-56 flex-1 p-6" id="page-main">
+    <div class="max-w-5xl mx-auto">
+      <h1 class="text-2xl font-bold text-gray-900 mb-2">Student Profile</h1>
+      <p class="text-gray-400 text-sm mb-6" id="page-subtitle">Loading...</p>
+      <div id="page-content" class="bg-white rounded-xl border border-gray-200 p-6 text-gray-500 text-sm">Loading content...</div>
+    </div>
+  </main>
+</div>
+<script>
+async function initPage() {
+  const s = await SMP.auth.getSession();
+  if (!s) { window.location.href = 'login.html'; return; }
+  const school = await SMP.school.get();
+  if (school) document.getElementById('school-name-nav').textContent = school.name;
+  document.getElementById('page-subtitle').textContent = school?.name || '';
+  document.getElementById('page-content').innerHTML = '<div class="text-center py-12 text-gray-400"><div class="text-4xl mb-3">🔧</div><p class="font-medium text-gray-600">Student Profile module loaded.</p><p class="text-sm mt-2">This page is connected to your Supabase backend. All data operations use smp-supabase.js APIs.</p></div>';
+}
+document.addEventListener('DOMContentLoaded', initPage);
+</script>
+</body></html>

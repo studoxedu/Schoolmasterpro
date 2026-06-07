@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register Your School — SchoolMasterPro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f1117;
+      --ink-soft: #3a3f4b;
+      --surface: #f7f7f5;
+      --white: #ffffff;
+      --accent: #1a6b3c;
+      --accent-light: #e8f5ee;
+      --accent-mid: #2d9b5a;
+      --border: #dddbd6;
+      --error: #c0392b;
+      --gold: #c9a84c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--surface);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* LEFT PANEL */
+    .left-panel {
+      width: 420px;
+      flex-shrink: 0;
+      background: var(--ink);
+      display: flex;
+      flex-direction: column;
+      padding: 48px 40px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(26,107,60,0.35) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 50% at 80% 10%, rgba(45,155,90,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .brand {
+      position: relative;
+      z-index: 1;
+    }
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .brand-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: -0.01em;
+    }
+    .brand-tag {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .left-content {
+      margin-top: auto;
+      margin-bottom: auto;
+      position: relative;
+      z-index: 1;
+    }
+    .left-headline {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+    .left-headline span { color: var(--accent-mid); }
+    .left-sub {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+    .features-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .feature-dot {
+      width: 20px;
+      height: 20px;
+      background: rgba(26,107,60,0.3);
+      border: 1px solid rgba(45,155,90,0.4);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .feature-dot svg { width: 10px; height: 10px; }
+    .feature-text {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+    }
+    .feature-text strong { color: rgba(255,255,255,0.85); font-weight: 500; }
+
+    .left-footer {
+      position: relative;
+      z-index: 1;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.25);
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* RIGHT PANEL */
+    .right-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 48px 60px;
+      display: flex;
+      flex-direction: column;
+    }
+    .right-inner {
+      max-width: 560px;
+      width: 100%;
+      margin: auto;
+    }
+
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: var(--border);
+      font-family: 'DM Mono', monospace;
+    }
+    .step.active { color: var(--accent); }
+    .step.done { color: var(--ink-soft); }
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid currentColor;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+    .step.active .step-num {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    .step-line {
+      width: 32px;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .section-sub {
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      margin-bottom: 32px;
+    }
+
+    /* PLAN CARDS */
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .plan-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+      background: var(--white);
+    }
+    .plan-card:hover { border-color: var(--accent-mid); }
+    .plan-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .plan-card input[type="radio"] { display: none; }
+    .plan-badge {
+      font-size: 0.65rem;
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .badge-trial { background: #fef3cd; color: #856404; }
+    .badge-lite { background: #dbeafe; color: #1d4ed8; }
+    .badge-full { background: var(--accent-light); color: var(--accent); }
+    .plan-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .plan-price {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+      margin-bottom: 10px;
+    }
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .plan-features li {
+      font-size: 0.72rem;
+      color: var(--ink-soft);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .plan-features li::before {
+      content: '✓';
+      font-size: 0.65rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .plan-popular {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: white;
+      font-size: 0.62rem;
+      font-family: 'DM Mono', monospace;
+      padding: 2px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    /* FORM */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--ink);
+      letter-spacing: 0.01em;
+    }
+    .required { color: var(--error); margin-left: 2px; }
+    input, select, textarea {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.875rem;
+      color: var(--ink);
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      transition: border-color 0.15s;
+      outline: none;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+    }
+    input.error, select.error { border-color: var(--error); }
+    .field-error {
+      font-size: 0.72rem;
+      color: var(--error);
+      display: none;
+    }
+    .field-error.visible { display: block; }
+
+    .form-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+    .form-section-label {
+      font-size: 0.72rem;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 16px;
+    }
+
+    .password-wrap { position: relative; }
+    .password-wrap input { padding-right: 44px; }
+    .toggle-pw {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--ink-soft);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+    }
+
+    .strength-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s, background 0.3s;
+      width: 0%;
+    }
+    .strength-label {
+      font-size: 0.68rem;
+      color: var(--ink-soft);
+      font-family: 'DM Mono', monospace;
+      margin-top: 3px;
+    }
+
+    /* TERMS */
+    .terms-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 24px 0 28px;
+    }
+    .terms-check input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      accent-color: var(--accent);
+    }
+    .terms-check span {
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+    .terms-check a { color: var(--accent); text-decoration: none; }
+
+    /* SUBMIT */
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Sora', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: -0.01em;
+    }
+    .btn-submit:hover:not(:disabled) { background: #155c32; transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+    }
+    .login-link a { color: var(--accent); text-decoration: none; font-weight: 500; }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      max-width: 360px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { background: var(--ink); color: white; }
+    .toast.error { background: var(--error); color: white; }
+
+    /* SUCCESS STATE */
+    .success-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 0;
+    }
+    .success-screen.visible { display: flex; }
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--accent-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .success-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+    }
+    .success-sub {
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      max-width: 380px;
+      margin-bottom: 32px;
+    }
+    .btn-go {
+      padding: 12px 32px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Sora', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-go:hover { background: #155c32; }
+
+    /* SPINNER */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 900px) {
+      .left-panel { display: none; }
+      .right-panel { padding: 32px 24px; }
+      .plan-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L4 7v5c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V7L12 3z" fill="white" fill-opacity="0.9"/>
+          <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="brand-name">SchoolMasterPro</div>
+      <div class="brand-tag">School Management Platform</div>
+    </div>
+
+    <div class="left-content">
+      <h2 class="left-headline">Run your school <span>smarter</span>, not harder.</h2>
+      <p class="left-sub">Nigeria's most complete school management platform. Student records, results, fees, staff — all in one place.</p>
+      <div class="features-list">
+        <div class="feature-item">
+          <div class="feature-dot">
+            <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 2.5" stroke="#2d9b5a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="feature-text"><strong>Automated result computation</strong> — CA + Exam auto-graded with positions</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot">
+            <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 2.5" stroke="#2d9b5a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="feature-text"><strong>PDF report cards</strong> — generate and share in seconds</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot">
+            <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 2.5" stroke="#2d9b5a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="feature-text"><strong>SMS & email alerts</strong> — fee reminders, results notifications via Termii</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot">
+            <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 2.5" stroke="#2d9b5a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="feature-text"><strong>Multi-tenancy</strong> — your data is 100% isolated and secure</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="left-footer">© 2025 SchoolMasterPro · All rights reserved</div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="right-inner">
+
+      <!-- STEP INDICATOR -->
+      <div class="step-indicator">
+        <div class="step active" id="step1-ind">
+          <div class="step-num">1</div>
+          <span>Choose plan</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" id="step2-ind">
+          <div class="step-num">2</div>
+          <span>School details</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" id="step3-ind">
+          <div class="step-num">3</div>
+          <span>Admin account</span>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div id="register-form">
+
+        <!-- STEP 1: PLAN -->
+        <div id="step1">
+          <h1 class="section-title">Choose your plan</h1>
+          <p class="section-sub">Start free, upgrade anytime. No credit card required for trial.</p>
+
+          <div class="plan-grid">
+            <!-- TRIAL -->
+            <label class="plan-card selected" id="card-trial">
+              <input type="radio" name="plan" value="trial" checked onchange="selectPlan('trial')" />
+              <span class="plan-badge badge-trial">Trial</span>
+              <div class="plan-name">Free Trial</div>
+              <div class="plan-price">₦0 / 30 days</div>
+              <ul class="plan-features">
+                <li>Demo school data</li>
+                <li>All features</li>
+                <li>Up to 50 students</li>
+                <li>Email support</li>
+              </ul>
+            </label>
+            <!-- LITE -->
+            <label class="plan-card" id="card-lite">
+              <input type="radio" name="plan" value="lite" onchange="selectPlan('lite')" />
+              <span class="plan-badge badge-lite">Lite</span>
+              <div class="plan-name">Lite</div>
+              <div class="plan-price">₦15,000 / term</div>
+              <ul class="plan-features">
+                <li>Assessment only</li>
+                <li>Report cards</li>
+                <li>Up to 200 students</li>
+                <li>Email support</li>
+              </ul>
+            </label>
+            <!-- FULL -->
+            <label class="plan-card" id="card-full" style="position:relative;">
+              <div class="plan-popular">Most Popular</div>
+              <input type="radio" name="plan" value="full" onchange="selectPlan('full')" />
+              <span class="plan-badge badge-full">Full</span>
+              <div class="plan-name">Full</div>
+              <div class="plan-price">₦35,000 / term</div>
+              <ul class="plan-features">
+                <li>All modules</li>
+                <li>SMS notifications</li>
+                <li>Unlimited students</li>
+                <li>Priority support</li>
+              </ul>
+            </label>
+          </div>
+
+          <button class="btn-submit" onclick="goToStep(2)">
+            Continue
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <!-- STEP 2: SCHOOL DETAILS -->
+        <div id="step2" style="display:none;">
+          <h1 class="section-title">School details</h1>
+          <p class="section-sub">Tell us about your school. You can update this later.</p>
+
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>School Name <span class="required">*</span></label>
+              <input type="text" id="school_name" placeholder="e.g. Greenwood Academy" />
+              <span class="field-error" id="err-school_name">School name is required</span>
+            </div>
+            <div class="form-group">
+              <label>State <span class="required">*</span></label>
+              <select id="school_state">
+                <option value="">Select state</option>
+                <option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option>
+                <option>Anambra</option><option>Bauchi</option><option>Bayelsa</option>
+                <option>Benue</option><option>Borno</option><option>Cross River</option>
+                <option>Delta</option><option>Ebonyi</option><option>Edo</option>
+                <option>Ekiti</option><option>Enugu</option><option>FCT</option>
+                <option>Gombe</option><option>Imo</option><option>Jigawa</option>
+                <option>Kaduna</option><option>Kano</option><option>Katsina</option>
+                <option>Kebbi</option><option>Kogi</option><option>Kwara</option>
+                <option>Lagos</option><option>Nasarawa</option><option>Niger</option>
+                <option>Ogun</option><option>Ondo</option><option>Osun</option>
+                <option>Oyo</option><option>Plateau</option><option>Rivers</option>
+                <option>Sokoto</option><option>Taraba</option><option>Yobe</option>
+                <option>Zamfara</option>
+              </select>
+              <span class="field-error" id="err-school_state">Please select a state</span>
+            </div>
+            <div class="form-group">
+              <label>LGA / City</label>
+              <input type="text" id="school_lga" placeholder="e.g. Ikeja" />
+            </div>
+            <div class="form-group full">
+              <label>School Address</label>
+              <input type="text" id="school_address" placeholder="e.g. 12 Education Crescent, Victoria Island" />
+            </div>
+            <div class="form-group">
+              <label>Phone Number <span class="required">*</span></label>
+              <input type="tel" id="school_phone" placeholder="e.g. 08012345678" />
+              <span class="field-error" id="err-school_phone">Valid phone number required</span>
+            </div>
+            <div class="form-group">
+              <label>School Type</label>
+              <select id="school_type">
+                <option value="secondary">Secondary School</option>
+                <option value="primary">Primary School</option>
+                <option value="combined">Combined (Pri + Sec)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top:24px;">
+            <button class="btn-submit" style="background:var(--surface); color:var(--ink); border:1.5px solid var(--border); flex:0 0 auto; width:auto; padding:14px 24px;" onclick="goToStep(1)">Back</button>
+            <button class="btn-submit" onclick="validateStep2()">
+              Continue
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3: ADMIN ACCOUNT -->
+        <div id="step3" style="display:none;">
+          <h1 class="section-title">Admin account</h1>
+          <p class="section-sub">This will be the primary administrator login for your school.</p>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>First Name <span class="required">*</span></label>
+              <input type="text" id="first_name" placeholder="Chidi" />
+              <span class="field-error" id="err-first_name">First name is required</span>
+            </div>
+            <div class="form-group">
+              <label>Last Name <span class="required">*</span></label>
+              <input type="text" id="last_name" placeholder="Okafor" />
+              <span class="field-error" id="err-last_name">Last name is required</span>
+            </div>
+            <div class="form-group full">
+              <label>Email Address <span class="required">*</span></label>
+              <input type="email" id="admin_email" placeholder="admin@greenwood.edu.ng" />
+              <span class="field-error" id="err-admin_email">Valid email address required</span>
+            </div>
+            <div class="form-group full">
+              <label>Password <span class="required">*</span></label>
+              <div class="password-wrap">
+                <input type="password" id="admin_password" placeholder="Min. 8 characters" oninput="checkStrength(this.value)" />
+                <button type="button" class="toggle-pw" onclick="togglePw('admin_password', this)">
+                  <svg id="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg id="eye-closed" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+              <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+              <div class="strength-label" id="strength-label"></div>
+              <span class="field-error" id="err-admin_password">Password must be at least 8 characters</span>
+            </div>
+            <div class="form-group full">
+              <label>Confirm Password <span class="required">*</span></label>
+              <div class="password-wrap">
+                <input type="password" id="confirm_password" placeholder="Repeat your password" />
+                <button type="button" class="toggle-pw" onclick="togglePw('confirm_password', this)">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+              <span class="field-error" id="err-confirm_password">Passwords do not match</span>
+            </div>
+          </div>
+
+          <div class="terms-check">
+            <input type="checkbox" id="agree_terms" />
+            <span>I agree to SchoolMasterPro's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I confirm that I am authorised to register this school on the platform.</span>
+          </div>
+
+          <div style="display:flex; gap:12px;">
+            <button class="btn-submit" style="background:var(--surface); color:var(--ink); border:1.5px solid var(--border); flex:0 0 auto; width:auto; padding:14px 24px;" onclick="goToStep(2)">Back</button>
+            <button class="btn-submit" id="submit-btn" onclick="submitRegistration()">
+              <span id="submit-label">Create Account</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SUCCESS STATE -->
+      <div class="success-screen" id="success-screen">
+        <div class="success-icon">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <path d="M7 18l7 7 15-15" stroke="#1a6b3c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 class="success-title" id="success-title">Welcome aboard!</h2>
+        <p class="success-sub" id="success-sub">Your school has been registered. Check your email for a confirmation link, then log in to get started.</p>
+        <button class="btn-go" onclick="window.location.href='login.html'">Go to Login →</button>
+      </div>
+
+      <div class="login-link">
+        Already have an account? <a href="login.html">Sign in</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+<script>
+  // ─── CONFIG ───────────────────────────────────────────────
+  const SMP_CONFIG = {
+    supabaseUrl: 'YOUR_SUPABASE_URL',
+    supabaseKey: 'YOUR_SUPABASE_ANON_KEY'
+  };
+  const { createClient } = supabase;
+  const sb = createClient(SMP_CONFIG.supabaseUrl, SMP_CONFIG.supabaseKey);
+
+  // ─── STATE ────────────────────────────────────────────────
+  let currentStep = 1;
+  let selectedPlan = 'trial';
+
+  // ─── PLAN SELECTION ───────────────────────────────────────
+  function selectPlan(plan) {
+    selectedPlan = plan;
+    ['trial','lite','full'].forEach(p => {
+      document.getElementById('card-' + p).classList.toggle('selected', p === plan);
+    });
+  }
+
+  // ─── STEP NAVIGATION ──────────────────────────────────────
+  function goToStep(n) {
+    document.getElementById('step' + currentStep).style.display = 'none';
+    document.getElementById('step' + n).style.display = 'block';
+
+    // update indicators
+    for (let i = 1; i <= 3; i++) {
+      const ind = document.getElementById('step' + i + '-ind');
+      ind.classList.remove('active', 'done');
+      if (i < n) ind.classList.add('done');
+      else if (i === n) ind.classList.add('active');
+    }
+    currentStep = n;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function validateStep2() {
+    let valid = true;
+    const name = document.getElementById('school_name').value.trim();
+    const state = document.getElementById('school_state').value;
+    const phone = document.getElementById('school_phone').value.trim();
+
+    setFieldError('school_name', !name);
+    setFieldError('school_state', !state);
+    setFieldError('school_phone', !/^0[789]\d{9}$/.test(phone));
+
+    if (!name || !state || !/^0[789]\d{9}$/.test(phone)) {
+      showToast('Please fill in all required fields correctly.', 'error');
+      return;
+    }
+    goToStep(3);
+  }
+
+  // ─── HELPERS ──────────────────────────────────────────────
+  function setFieldError(id, show) {
+    const input = document.getElementById(id);
+    const err = document.getElementById('err-' + id);
+    if (!input || !err) return;
+    input.classList.toggle('error', show);
+    err.classList.toggle('visible', show);
+  }
+
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3800);
+  }
+
+  function togglePw(id, btn) {
+    const input = document.getElementById(id);
+    const isText = input.type === 'text';
+    input.type = isText ? 'password' : 'text';
+    const open = btn.querySelector('#eye-open') || btn.querySelectorAll('svg')[0];
+    const closed = btn.querySelector('#eye-closed') || btn.querySelectorAll('svg')[1];
+    if (open) open.style.display = isText ? '' : 'none';
+    if (closed) closed.style.display = isText ? 'none' : '';
+  }
+
+  function checkStrength(pw) {
+    const fill = document.getElementById('strength-fill');
+    const label = document.getElementById('strength-label');
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+    const levels = [
+      { pct: '0%', color: '', text: '' },
+      { pct: '25%', color: '#c0392b', text: 'Weak' },
+      { pct: '50%', color: '#e67e22', text: 'Fair' },
+      { pct: '75%', color: '#f1c40f', text: 'Good' },
+      { pct: '100%', color: '#1a6b3c', text: 'Strong' },
+    ];
+    fill.style.width = levels[score].pct;
+    fill.style.background = levels[score].color;
+    label.textContent = levels[score].text;
+  }
+
+  // ─── SUBMIT ───────────────────────────────────────────────
+  async function submitRegistration() {
+    // Validate step 3
+    const firstName = document.getElementById('first_name').value.trim();
+    const lastName = document.getElementById('last_name').value.trim();
+    const email = document.getElementById('admin_email').value.trim();
+    const password = document.getElementById('admin_password').value;
+    const confirm = document.getElementById('confirm_password').value;
+    const agreed = document.getElementById('agree_terms').checked;
+
+    setFieldError('first_name', !firstName);
+    setFieldError('last_name', !lastName);
+    setFieldError('admin_email', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+    setFieldError('admin_password', password.length < 8);
+    setFieldError('confirm_password', password !== confirm);
+
+    if (!firstName || !lastName || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 8 || password !== confirm) {
+      showToast('Please fix the errors above.', 'error');
+      return;
+    }
+    if (!agreed) {
+      showToast('You must agree to the Terms of Service to continue.', 'error');
+      return;
+    }
+
+    // Disable button
+    const btn = document.getElementById('submit-btn');
+    const label = document.getElementById('submit-label');
+    btn.disabled = true;
+    label.innerHTML = '<div class="spinner"></div>';
+
+    try {
+      // 1. Create auth user
+      const { data: authData, error: authError } = await sb.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            full_name: `${firstName} ${lastName}`
+          }
+        }
+      });
+
+      if (authError) throw authError;
+
+      const userId = authData.user?.id;
+      if (!userId) throw new Error('User creation failed — no user ID returned.');
+
+      // 2. Provision school via RPC
+      const schoolData = {
+        p_name: document.getElementById('school_name').value.trim(),
+        p_address: document.getElementById('school_address').value.trim(),
+        p_state: document.getElementById('school_state').value,
+        p_lga: document.getElementById('school_lga').value.trim(),
+        p_phone: document.getElementById('school_phone').value.trim(),
+        p_school_type: document.getElementById('school_type').value,
+        p_plan: selectedPlan,
+        p_admin_user_id: userId,
+        p_admin_email: email,
+        p_admin_name: `${firstName} ${lastName}`
+      };
+
+      const { data: rpcData, error: rpcError } = await sb.rpc('provision_school', schoolData);
+      if (rpcError) throw rpcError;
+
+      // 3. Send welcome email via Edge Function
+      try {
+        await sb.functions.invoke('send-notifications', {
+          body: {
+            type: 'welcome',
+            to_email: email,
+            to_name: `${firstName} ${lastName}`,
+            school_name: schoolData.p_name,
+            plan: selectedPlan
+          }
+        });
+      } catch (e) {
+        // non-fatal — school is created, email just didn't send
+        console.warn('Welcome email failed:', e);
+      }
+
+      // 4. Show success
+      document.getElementById('register-form').style.display = 'none';
+      const successScreen = document.getElementById('success-screen');
+      successScreen.classList.add('visible');
+
+      if (selectedPlan === 'trial') {
+        document.getElementById('success-sub').textContent =
+          'Your school is set up with demo data so you can explore immediately. Check your email for a confirmation link, then log in to get started.';
+      }
+
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || 'Registration failed. Please try again.', 'error');
+      btn.disabled = false;
+      label.textContent = 'Create Account';
+    }
+  }
+</script>
+</body>
+</html>

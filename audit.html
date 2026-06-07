@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audit Log — SchoolMasterPro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="smp-supabase.js"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: #f8f9fa; }
+    .action-badge { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .action-score  { background:#dbeafe; color:#1d4ed8; }
+    .action-student{ background:#dcfce7; color:#166534; }
+    .action-fee    { background:#fef9c3; color:#854d0e; }
+    .action-export { background:#f3e8ff; color:#7c3aed; }
+    .action-other  { background:#f1f5f9; color:#475569; }
+  </style>
+</head>
+<body>
+<div id="app-root"></div>
+<script>
+// ── shared nav render (same pattern as other pages) ──────────
+document.getElementById('app-root').innerHTML = `
+<div class="min-h-screen flex">
+  <!-- Sidebar -->
+  <aside class="w-56 bg-gray-900 text-white flex flex-col fixed inset-y-0 z-30">
+    <div class="p-4 border-b border-gray-700">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center text-xs font-bold">S</div>
+        <span class="font-semibold text-sm">SchoolMasterPro</span>
+      </div>
+      <p class="text-xs text-gray-400 mt-1" id="school-name-nav">Loading...</p>
+    </div>
+    <nav class="flex-1 p-3 space-y-1 text-sm overflow-y-auto">
+      <a href="index.html"           class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📊 Dashboard</a>
+      <a href="students.html"        class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👥 Students</a>
+      <a href="scores.html"          class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📝 Scores</a>
+      <a href="fees.html"            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">💰 Fees</a>
+      <a href="reports.html"         class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📄 Reports</a>
+      <a href="staff.html"           class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👤 Staff</a>
+      <a href="notifications.html"   class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔔 Notifications</a>
+      <a href="audit.html"           class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 text-white">🔍 Audit Log</a>
+      <a href="term-comparison.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📈 Term Compare</a>
+    </nav>
+    <div class="p-3 border-t border-gray-700">
+      <button onclick="AuditPage.logout()" class="w-full text-left flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white text-sm">🚪 Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="ml-56 flex-1 p-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Audit Log</h1>
+          <p class="text-gray-500 text-sm mt-1">Complete record of all system changes</p>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex flex-wrap gap-3">
+        <select id="filter-entity" onchange="AuditPage.load()" class="text-sm border border-gray-200 rounded-lg px-3 py-2">
+          <option value="">All entities</option>
+          <option value="assessment">Scores</option>
+          <option value="student">Students</option>
+          <option value="fee">Fees</option>
+        </select>
+        <select id="filter-action" onchange="AuditPage.load()" class="text-sm border border-gray-200 rounded-lg px-3 py-2">
+          <option value="">All actions</option>
+          <option value="score.edit">Score edits</option>
+          <option value="score.lock">Score locks</option>
+          <option value="student.create">Student created</option>
+          <option value="student.delete">Student deleted</option>
+          <option value="fee.payment">Fee payments</option>
+          <option value="student.export">Exports</option>
+        </select>
+        <button onclick="AuditPage.load()" class="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg">Refresh</button>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Time</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Action</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">User</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Detail</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium"></th>
+            </tr>
+          </thead>
+          <tbody id="audit-table-body">
+            <tr><td colspan="5" class="text-center py-10 text-gray-400">Loading...</td></tr>
+          </tbody>
+        </table>
+        <div class="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
+          <span class="text-sm text-gray-500" id="audit-count"></span>
+          <div class="flex gap-2">
+            <button id="prev-btn" onclick="AuditPage.prev()" class="px-3 py-1 text-sm border border-gray-200 rounded-lg disabled:opacity-40">← Prev</button>
+            <button id="next-btn" onclick="AuditPage.next()" class="px-3 py-1 text-sm border border-gray-200 rounded-lg disabled:opacity-40">Next →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail modal -->
+      <div id="detail-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-lg w-full p-6 max-h-[80vh] overflow-y-auto">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-gray-900">Change Detail</h3>
+            <button onclick="document.getElementById('detail-modal').classList.add('hidden');document.getElementById('detail-modal').classList.remove('flex')" class="text-gray-400 hover:text-gray-600">✕</button>
+          </div>
+          <div id="detail-content"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>`;
+
+const AuditPage = {
+  offset: 0,
+  limit: 50,
+  total: 0,
+
+  async init() {
+    const session = await SMP.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+    const school = await SMP.school.get();
+    if (school) document.getElementById('school-name-nav').textContent = school.name;
+    this.load();
+  },
+
+  async load() {
+    this.offset = 0;
+    await this.fetch();
+  },
+
+  async fetch() {
+    const entity = document.getElementById('filter-entity').value || null;
+    const action = document.getElementById('filter-action').value || null;
+    const body = document.getElementById('audit-table-body');
+    body.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">Loading...</td></tr>';
+
+    try {
+      const { data, error } = await SMP.client.rpc('get_audit_logs', {
+        p_entity: entity, p_action: action,
+        p_limit: this.limit, p_offset: this.offset
+      });
+      if (error) throw error;
+      this.total = data.total;
+      this.render(data.logs || []);
+    } catch (e) {
+      body.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-red-400">${e.message}</td></tr>`;
+    }
+  },
+
+  render(logs) {
+    const body = document.getElementById('audit-table-body');
+    document.getElementById('audit-count').textContent =
+      `Showing ${this.offset + 1}–${Math.min(this.offset + logs.length, this.total)} of ${this.total}`;
+    document.getElementById('prev-btn').disabled = this.offset === 0;
+    document.getElementById('next-btn').disabled = this.offset + this.limit >= this.total;
+
+    if (!logs.length) {
+      body.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-gray-400">No audit records found</td></tr>';
+      return;
+    }
+
+    body.innerHTML = logs.map(log => {
+      const actionClass = log.action.startsWith('score') ? 'action-score'
+        : log.action.startsWith('student') ? 'action-student'
+        : log.action.startsWith('fee') ? 'action-fee'
+        : log.action.startsWith('export') ? 'action-export' : 'action-other';
+
+      const time = new Date(log.created_at);
+      const timeStr = time.toLocaleDateString('en-NG', {day:'2-digit',month:'short',year:'numeric'})
+        + ' ' + time.toLocaleTimeString('en-NG', {hour:'2-digit',minute:'2-digit'});
+
+      const detail = this.getDetail(log);
+
+      return `<tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+        <td class="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">${timeStr}</td>
+        <td class="px-4 py-3"><span class="action-badge ${actionClass}">${log.action}</span></td>
+        <td class="px-4 py-3 text-gray-700 text-xs">${log.user_name || '—'}</td>
+        <td class="px-4 py-3 text-gray-600 text-xs">${detail}</td>
+        <td class="px-4 py-3">
+          ${(log.old_data || log.new_data) ? `<button onclick='AuditPage.showDetail(${JSON.stringify(log).replace(/'/g,"&#39;")})' class="text-xs text-blue-600 hover:underline">View</button>` : ''}
+        </td>
+      </tr>`;
+    }).join('');
+  },
+
+  getDetail(log) {
+    if (log.action === 'score.edit' && log.old_data && log.new_data) {
+      return `Total: ${log.old_data.total} → ${log.new_data.total} (${log.old_data.grade} → ${log.new_data.grade})`;
+    }
+    if (log.action === 'fee.payment' && log.new_data) {
+      return `Paid: ₦${Number(log.new_data.amount_paid).toLocaleString('en-NG')} · Status: ${log.new_data.status}`;
+    }
+    if (log.new_data?.name) return log.new_data.name;
+    if (log.new_data?.code) return log.new_data.code;
+    return log.entity_id ? log.entity_id.slice(0,8) + '…' : '—';
+  },
+
+  showDetail(log) {
+    const modal = document.getElementById('detail-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.getElementById('detail-content').innerHTML = `
+      <div class="space-y-3 text-sm">
+        <div><span class="text-gray-400 text-xs uppercase">Action</span><div class="font-medium">${log.action}</div></div>
+        <div><span class="text-gray-400 text-xs uppercase">Entity</span><div>${log.entity} · ${log.entity_id || '—'}</div></div>
+        <div><span class="text-gray-400 text-xs uppercase">By</span><div>${log.user_name || '—'}</div></div>
+        ${log.old_data ? `<div><span class="text-gray-400 text-xs uppercase">Before</span><pre class="bg-gray-50 rounded p-2 text-xs mt-1 overflow-auto">${JSON.stringify(log.old_data, null, 2)}</pre></div>` : ''}
+        ${log.new_data ? `<div><span class="text-gray-400 text-xs uppercase">After</span><pre class="bg-green-50 rounded p-2 text-xs mt-1 overflow-auto">${JSON.stringify(log.new_data, null, 2)}</pre></div>` : ''}
+      </div>`;
+  },
+
+  async prev() { if (this.offset >= this.limit) { this.offset -= this.limit; await this.fetch(); } },
+  async next() { if (this.offset + this.limit < this.total) { this.offset += this.limit; await this.fetch(); } },
+  async logout() { await SMP.auth.signOut(); window.location.href = 'login.html'; }
+};
+
+document.addEventListener('DOMContentLoaded', () => AuditPage.init());
+</script>
+</body>
+</html>

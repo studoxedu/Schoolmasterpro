@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fee Receipts — SchoolMasterPro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="smp-supabase.js"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+<div class="min-h-screen flex">
+  <!-- Sidebar -->
+  <aside class="w-56 bg-gray-900 text-white flex flex-col fixed inset-y-0 z-30">
+    <div class="p-4 border-b border-gray-700">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center text-xs font-bold">S</div>
+        <span class="font-semibold text-sm">SchoolMasterPro</span>
+      </div>
+      <p class="text-xs text-gray-400 mt-1" id="school-name-nav">Loading...</p>
+    </div>
+    <nav class="flex-1 p-3 space-y-1 text-sm overflow-y-auto">
+      <a href="index.html"  class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📊 Dashboard</a>
+      <a href="students.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👥 Students</a>
+      <a href="fees.html"   class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">💰 Fees</a>
+      <a href="receipts.html" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 text-white">🧾 Receipts</a>
+      <a href="reports.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📄 Reports</a>
+      <a href="audit.html"  class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔍 Audit Log</a>
+    </nav>
+    <div class="p-3 border-t border-gray-700">
+      <button onclick="SMP.auth.signOut().then(()=>location.href='login.html')" class="w-full text-left flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white text-sm">🚪 Sign Out</button>
+    </div>
+  </aside>
+
+  <main class="ml-56 flex-1 p-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Fee Receipts</h1>
+          <p class="text-gray-500 text-sm mt-1">Record payments and generate official receipts</p>
+        </div>
+        <button onclick="ReceiptsPage.openPaymentModal()" class="px-4 py-2 bg-green-700 text-white text-sm font-medium rounded-lg hover:bg-green-800">+ Record Payment</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-3 gap-4 mb-6" id="stats-row">
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <div class="text-xs text-gray-400 uppercase tracking-wide">Total Receipts</div>
+          <div class="text-2xl font-bold text-gray-900 mt-1" id="stat-total">—</div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <div class="text-xs text-gray-400 uppercase tracking-wide">Total Collected</div>
+          <div class="text-2xl font-bold text-green-700 mt-1" id="stat-collected">—</div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <div class="text-xs text-gray-400 uppercase tracking-wide">Outstanding Fees</div>
+          <div class="text-2xl font-bold text-red-600 mt-1" id="stat-overdue">—</div>
+        </div>
+      </div>
+
+      <!-- Overdue alert -->
+      <div id="overdue-alert" class="hidden bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-red-800" id="overdue-msg"></div>
+            <div class="text-sm text-red-600 mt-1">Send reminders from the Notifications page</div>
+          </div>
+          <button onclick="ReceiptsPage.viewOverdue()" class="px-3 py-1.5 bg-red-600 text-white text-sm rounded-lg">View All</button>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="bg-white rounded-xl border border-gray-200 p-4 mb-4">
+        <input type="text" id="search-input" placeholder="Search by student name or receipt number…"
+          class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2"
+          oninput="ReceiptsPage.search(this.value)" />
+      </div>
+
+      <!-- Receipts table -->
+      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Receipt No.</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Student</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Fee</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Amount Paid</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Method</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Date</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">By</th>
+              <th class="px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody id="receipts-body">
+            <tr><td colspan="8" class="text-center py-10 text-gray-400">Loading…</td></tr>
+          </tbody>
+        </table>
+        <div class="px-4 py-3 border-t border-gray-100 flex justify-between items-center">
+          <span class="text-sm text-gray-500" id="receipt-count"></span>
+          <div class="flex gap-2">
+            <button id="prev-btn" onclick="ReceiptsPage.prev()" class="px-3 py-1 text-sm border border-gray-200 rounded-lg">← Prev</button>
+            <button id="next-btn" onclick="ReceiptsPage.next()" class="px-3 py-1 text-sm border border-gray-200 rounded-lg">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Payment Modal -->
+<div id="payment-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+  <div class="bg-white rounded-xl max-w-md w-full p-6">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="font-semibold text-gray-900">Record Fee Payment</h3>
+      <button onclick="ReceiptsPage.closeModal('payment-modal')" class="text-gray-400 hover:text-gray-600">✕</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="text-xs font-medium text-gray-700 uppercase tracking-wide">Student Name</label>
+        <input type="text" id="pay-student-search" placeholder="Type to search…" oninput="ReceiptsPage.searchStudents(this.value)"
+          class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+        <div id="student-suggestions" class="border border-gray-200 rounded-lg mt-1 hidden max-h-40 overflow-y-auto"></div>
+      </div>
+      <div id="fee-selector-wrap" class="hidden">
+        <label class="text-xs font-medium text-gray-700 uppercase tracking-wide">Select Fee</label>
+        <select id="pay-fee-select" class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+          <option value="">— choose fee —</option>
+        </select>
+        <div id="fee-balance-info" class="mt-1 text-xs text-gray-500"></div>
+      </div>
+      <div>
+        <label class="text-xs font-medium text-gray-700 uppercase tracking-wide">Amount (₦)</label>
+        <input type="number" id="pay-amount" min="1" placeholder="e.g. 25000"
+          class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+      </div>
+      <div>
+        <label class="text-xs font-medium text-gray-700 uppercase tracking-wide">Payment Method</label>
+        <select id="pay-method" class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+          <option value="cash">Cash</option>
+          <option value="transfer">Bank Transfer</option>
+          <option value="pos">POS</option>
+          <option value="cheque">Cheque</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-xs font-medium text-gray-700 uppercase tracking-wide">Paid By (Parent/Guardian)</label>
+        <input type="text" id="pay-paid-by" placeholder="e.g. Mr. Chukwu Emmanuel"
+          class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+      </div>
+      <div>
+        <label class="text-xs font-medium text-gray-700 uppercase tracking-wide">Notes (optional)</label>
+        <input type="text" id="pay-notes" placeholder="e.g. School fees balance"
+          class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button onclick="ReceiptsPage.closeModal('payment-modal')" class="flex-1 px-4 py-2 border border-gray-200 text-sm rounded-lg">Cancel</button>
+      <button onclick="ReceiptsPage.submitPayment()" id="pay-btn" class="flex-1 px-4 py-2 bg-green-700 text-white text-sm rounded-lg font-medium">Record & Print Receipt</button>
+    </div>
+  </div>
+</div>
+
+<!-- Overdue Modal -->
+<div id="overdue-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+  <div class="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-semibold text-gray-900">Overdue Fees</h3>
+      <button onclick="ReceiptsPage.closeModal('overdue-modal')" class="text-gray-400 hover:text-gray-600">✕</button>
+    </div>
+    <div id="overdue-list"></div>
+  </div>
+</div>
+
+<div id="toast" class="fixed bottom-4 right-4 z-50 px-4 py-3 rounded-xl text-white text-sm font-medium shadow-lg hidden"></div>
+
+<script>
+let schoolData = null;
+const ReceiptsPage = {
+  receipts: [], offset: 0, limit: 50, total: 0,
+  selectedStudent: null, allStudents: [],
+
+  async init() {
+    const session = await SMP.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+    schoolData = await SMP.school.get();
+    if (schoolData) document.getElementById('school-name-nav').textContent = schoolData.name;
+    await this.loadStats();
+    await this.fetchReceipts();
+  },
+
+  async loadStats() {
+    try {
+      const { data: receiptsData } = await SMP.client.rpc('get_receipts', { p_limit: 1000, p_offset: 0 });
+      const receipts = receiptsData?.receipts || [];
+      const total = receipts.reduce((s, r) => s + Number(r.amount_paid), 0);
+      document.getElementById('stat-total').textContent = receipts.length;
+      document.getElementById('stat-collected').textContent = '₦' + total.toLocaleString('en-NG');
+
+      const { data: overdueData } = await SMP.client.rpc('get_overdue_fees', { p_days_overdue: 0 });
+      const overdue = overdueData?.overdue || [];
+      const overdueTotal = overdue.reduce((s, f) => s + Number(f.balance), 0);
+      document.getElementById('stat-overdue').textContent = '₦' + overdueTotal.toLocaleString('en-NG');
+      if (overdue.length > 0) {
+        document.getElementById('overdue-alert').classList.remove('hidden');
+        document.getElementById('overdue-msg').textContent =
+          `${overdue.length} student${overdue.length > 1 ? 's have' : ' has'} overdue fees totalling ₦${overdueTotal.toLocaleString('en-NG')}`;
+        this._overdueList = overdue;
+      }
+    } catch(e) { console.error(e); }
+  },
+
+  async fetchReceipts() {
+    const body = document.getElementById('receipts-body');
+    body.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-gray-400">Loading…</td></tr>';
+    try {
+      const { data, error } = await SMP.client.rpc('get_receipts', { p_limit: this.limit, p_offset: this.offset });
+      if (error) throw error;
+      this.receipts = data.receipts || [];
+      this.total = data.total;
+      this.renderReceipts(this.receipts);
+    } catch(e) {
+      body.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-red-400">${e.message}</td></tr>`;
+    }
+  },
+
+  renderReceipts(list) {
+    const body = document.getElementById('receipts-body');
+    document.getElementById('receipt-count').textContent =
+      `${this.offset + 1}–${Math.min(this.offset + list.length, this.total)} of ${this.total}`;
+    document.getElementById('prev-btn').disabled = this.offset === 0;
+    document.getElementById('next-btn').disabled = this.offset + this.limit >= this.total;
+
+    if (!list.length) {
+      body.innerHTML = '<tr><td colspan="8" class="text-center py-10 text-gray-400">No receipts yet. Record a payment to get started.</td></tr>';
+      return;
+    }
+    const methodBadge = { cash:'bg-green-100 text-green-800', transfer:'bg-blue-100 text-blue-800', pos:'bg-purple-100 text-purple-800', cheque:'bg-yellow-100 text-yellow-800', other:'bg-gray-100 text-gray-800' };
+    body.innerHTML = list.map(r => `
+      <tr class="border-b border-gray-50 hover:bg-gray-50">
+        <td class="px-4 py-3 font-mono text-xs text-gray-600">${r.receipt_no}</td>
+        <td class="px-4 py-3">
+          <div class="font-medium text-gray-900 text-sm">${r.student_name}</div>
+          <div class="text-xs text-gray-400">${r.student_code}</div>
+        </td>
+        <td class="px-4 py-3 text-xs text-gray-600">${r.fee_description || '—'}</td>
+        <td class="px-4 py-3 font-semibold text-green-700">₦${Number(r.amount_paid).toLocaleString('en-NG')}</td>
+        <td class="px-4 py-3"><span class="px-2 py-0.5 text-xs rounded-full ${methodBadge[r.payment_method]||'bg-gray-100 text-gray-800'}">${r.payment_method}</span></td>
+        <td class="px-4 py-3 text-xs text-gray-500">${new Date(r.issued_at).toLocaleDateString('en-NG',{day:'2-digit',month:'short',year:'numeric'})}</td>
+        <td class="px-4 py-3 text-xs text-gray-500">${r.issued_by_name||'—'}</td>
+        <td class="px-4 py-3">
+          <button onclick='ReceiptsPage.printReceipt(${JSON.stringify(r).replace(/'/g,"&#39;")})' class="text-xs text-blue-600 hover:underline">Print</button>
+        </td>
+      </tr>`).join('');
+  },
+
+  search(q) {
+    if (!q) { this.renderReceipts(this.receipts); return; }
+    const filtered = this.receipts.filter(r =>
+      r.student_name.toLowerCase().includes(q.toLowerCase()) ||
+      r.receipt_no.toLowerCase().includes(q.toLowerCase())
+    );
+    this.renderReceipts(filtered);
+  },
+
+  openPaymentModal() {
+    document.getElementById('payment-modal').classList.remove('hidden');
+    document.getElementById('payment-modal').classList.add('flex');
+    this.selectedStudent = null;
+    document.getElementById('pay-student-search').value = '';
+    document.getElementById('fee-selector-wrap').classList.add('hidden');
+    document.getElementById('pay-amount').value = '';
+    document.getElementById('pay-paid-by').value = '';
+    document.getElementById('pay-notes').value = '';
+  },
+
+  closeModal(id) {
+    document.getElementById(id).classList.add('hidden');
+    document.getElementById(id).classList.remove('flex');
+  },
+
+  async searchStudents(q) {
+    if (q.length < 2) { document.getElementById('student-suggestions').classList.add('hidden'); return; }
+    const { data } = await SMP.client.from('students')
+      .select('id,first_name,last_name,student_code')
+      .eq('school_id', schoolData.id)
+      .ilike('first_name', `%${q}%`)
+      .limit(6);
+    const box = document.getElementById('student-suggestions');
+    if (!data || !data.length) { box.classList.add('hidden'); return; }
+    box.classList.remove('hidden');
+    box.innerHTML = data.map(s => `
+      <div class="px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm" onclick="ReceiptsPage.selectStudent(${JSON.stringify(s).replace(/'/g,'&#39;')})">
+        ${s.first_name} ${s.last_name} <span class="text-gray-400 text-xs">${s.student_code}</span>
+      </div>`).join('');
+  },
+
+  async selectStudent(s) {
+    this.selectedStudent = s;
+    document.getElementById('pay-student-search').value = `${s.first_name} ${s.last_name}`;
+    document.getElementById('student-suggestions').classList.add('hidden');
+    // Load their outstanding fees
+    const { data } = await SMP.client.from('fees')
+      .select('id,description,amount,amount_paid,status')
+      .eq('student_id', s.id)
+      .in('status', ['unpaid','partial']);
+    const sel = document.getElementById('pay-fee-select');
+    sel.innerHTML = '<option value="">— choose fee —</option>' +
+      (data||[]).map(f => `<option value="${f.id}" data-amount="${f.amount}" data-paid="${f.amount_paid}">
+        ${f.description} · Balance: ₦${(f.amount - f.amount_paid).toLocaleString('en-NG')}
+      </option>`).join('');
+    document.getElementById('fee-selector-wrap').classList.remove('hidden');
+    sel.onchange = () => {
+      const opt = sel.selectedOptions[0];
+      if (opt && opt.dataset.amount) {
+        const balance = Number(opt.dataset.amount) - Number(opt.dataset.paid);
+        document.getElementById('fee-balance-info').textContent = `Outstanding: ₦${balance.toLocaleString('en-NG')}`;
+        document.getElementById('pay-amount').value = balance;
+      }
+    };
+  },
+
+  async submitPayment() {
+    const feeId = document.getElementById('pay-fee-select').value;
+    const amount = Number(document.getElementById('pay-amount').value);
+    const method = document.getElementById('pay-method').value;
+    const paidBy = document.getElementById('pay-paid-by').value.trim();
+    const notes  = document.getElementById('pay-notes').value.trim();
+
+    if (!feeId) { this.toast('Select a fee record', 'error'); return; }
+    if (!amount || amount <= 0) { this.toast('Enter a valid amount', 'error'); return; }
+
+    const btn = document.getElementById('pay-btn');
+    btn.disabled = true; btn.textContent = 'Processing…';
+    try {
+      const { data, error } = await SMP.client.rpc('record_fee_payment', {
+        p_fee_id: feeId, p_amount: amount,
+        p_method: method, p_paid_by: paidBy, p_notes: notes
+      });
+      if (error) throw error;
+      this.closeModal('payment-modal');
+      this.toast(`Receipt ${data.receipt_no} generated!`, 'success');
+      await this.fetchReceipts();
+      await this.loadStats();
+      // Auto-print
+      this.printReceiptFromData(data, paidBy, method, notes);
+    } catch(e) {
+      this.toast(e.message, 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Record & Print Receipt';
+    }
+  },
+
+  printReceiptFromData(data, paidBy, method, notes) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ format: 'a5' });
+    const school = schoolData?.name || 'School';
+    const date = new Date().toLocaleDateString('en-NG',{day:'2-digit',month:'long',year:'numeric'});
+
+    doc.setFillColor(15,17,23); doc.rect(0,0,148,25,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(13); doc.setFont('helvetica','bold');
+    doc.text(school, 74, 12, {align:'center'});
+    doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(180,180,180);
+    doc.text('OFFICIAL FEE RECEIPT', 74, 19, {align:'center'});
+
+    doc.setTextColor(0,0,0); doc.setFontSize(9);
+    const rows = [
+      ['Receipt No.', data.receipt_no],
+      ['Date', date],
+      ['Payment Method', method.toUpperCase()],
+      ['Paid By', paidBy || '—'],
+      ...(notes ? [['Notes', notes]] : [])
+    ];
+    let y = 35;
+    rows.forEach(([k,v]) => {
+      doc.setFont('helvetica','bold'); doc.text(k + ':', 10, y);
+      doc.setFont('helvetica','normal'); doc.text(String(v), 55, y);
+      y += 8;
+    });
+
+    doc.setDrawColor(220,220,220); doc.line(10, y, 138, y); y += 8;
+    doc.setFontSize(10); doc.setFont('helvetica','bold');
+    doc.text('Amount Paid', 10, y);
+    doc.setTextColor(26,107,60);
+    doc.text('₦' + Number(data.amount_paid).toLocaleString('en-NG'), 138, y, {align:'right'});
+    doc.setTextColor(0,0,0);
+    y += 7;
+    doc.setFontSize(8); doc.setFont('helvetica','normal');
+    doc.text(`New Status: ${data.new_status.toUpperCase()} · Total Paid: ₦${Number(data.new_total_paid).toLocaleString('en-NG')} / ₦${Number(data.fee_amount).toLocaleString('en-NG')}`, 10, y);
+
+    y += 16;
+    doc.setDrawColor(220,220,220); doc.line(10, y, 138, y); y += 8;
+    doc.setFontSize(7); doc.setTextColor(120,120,120);
+    doc.text('This is an official receipt issued by ' + school + '. Keep for your records.', 74, y, {align:'center'});
+
+    doc.save(`receipt-${data.receipt_no}.pdf`);
+  },
+
+  printReceipt(r) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ format: 'a5' });
+    const school = schoolData?.name || 'School';
+    const date = new Date(r.issued_at).toLocaleDateString('en-NG',{day:'2-digit',month:'long',year:'numeric'});
+
+    doc.setFillColor(15,17,23); doc.rect(0,0,148,25,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(13); doc.setFont('helvetica','bold');
+    doc.text(school, 74, 12, {align:'center'});
+    doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(180,180,180);
+    doc.text('OFFICIAL FEE RECEIPT', 74, 19, {align:'center'});
+
+    doc.setTextColor(0,0,0); doc.setFontSize(9);
+    const rows = [
+      ['Receipt No.', r.receipt_no], ['Date', date],
+      ['Student', r.student_name], ['Student Code', r.student_code],
+      ['Fee', r.fee_description || '—'],
+      ['Payment Method', r.payment_method?.toUpperCase() || '—'],
+      ['Paid By', r.paid_by || '—'],
+      ['Issued By', r.issued_by_name || '—'],
+      ...(r.notes ? [['Notes', r.notes]] : [])
+    ];
+    let y = 35;
+    rows.forEach(([k,v]) => {
+      doc.setFont('helvetica','bold'); doc.text(k + ':', 10, y);
+      doc.setFont('helvetica','normal'); doc.text(String(v), 55, y);
+      y += 8;
+    });
+
+    doc.setDrawColor(220,220,220); doc.line(10, y, 138, y); y += 8;
+    doc.setFontSize(11); doc.setFont('helvetica','bold');
+    doc.text('Amount Paid', 10, y);
+    doc.setTextColor(26,107,60);
+    doc.text('₦' + Number(r.amount_paid).toLocaleString('en-NG'), 138, y, {align:'right'});
+    doc.setTextColor(0,0,0);
+
+    y += 18;
+    doc.setDrawColor(220,220,220); doc.line(10, y, 138, y); y += 8;
+    doc.setFontSize(7); doc.setTextColor(120,120,120);
+    doc.text('This is an official receipt issued by ' + school + '. Keep for your records.', 74, y, {align:'center'});
+    doc.save(`receipt-${r.receipt_no}.pdf`);
+  },
+
+  viewOverdue() {
+    const list = this._overdueList || [];
+    document.getElementById('overdue-list').innerHTML = list.length ? `
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50"><tr>
+          <th class="text-left px-3 py-2 text-gray-500 font-medium">Student</th>
+          <th class="text-left px-3 py-2 text-gray-500 font-medium">Fee</th>
+          <th class="text-left px-3 py-2 text-gray-500 font-medium">Balance</th>
+          <th class="text-left px-3 py-2 text-gray-500 font-medium">Days Overdue</th>
+        </tr></thead>
+        <tbody>
+          ${list.map(f => `<tr class="border-b border-gray-100">
+            <td class="px-3 py-2">${f.student_name}<div class="text-xs text-gray-400">${f.student_code}</div></td>
+            <td class="px-3 py-2 text-xs text-gray-600">${f.description}</td>
+            <td class="px-3 py-2 font-semibold text-red-600">₦${Number(f.balance).toLocaleString('en-NG')}</td>
+            <td class="px-3 py-2 text-xs text-red-500">${f.days_overdue} days</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>` : '<p class="text-gray-400 text-sm text-center py-8">No overdue fees</p>';
+    document.getElementById('overdue-modal').classList.remove('hidden');
+    document.getElementById('overdue-modal').classList.add('flex');
+  },
+
+  prev() { if (this.offset >= this.limit) { this.offset -= this.limit; this.fetchReceipts(); } },
+  next() { if (this.offset + this.limit < this.total) { this.offset += this.limit; this.fetchReceipts(); } },
+
+  toast(msg, type='success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `fixed bottom-4 right-4 z-50 px-4 py-3 rounded-xl text-white text-sm font-medium shadow-lg ${type==='error'?'bg-red-600':'bg-gray-900'}`;
+    setTimeout(() => t.className = t.className + ' hidden', 3500);
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => ReceiptsPage.init());
+</script>
+</body>
+</html>
