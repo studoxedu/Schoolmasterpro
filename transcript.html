@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Transcript — SchoolMasterPro</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="smp-supabase.js"></script>
   <style id="smp-core-styles">
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{line-height:1.5;-webkit-text-size-adjust:100%}
@@ -245,12 +251,6 @@ aside.w-56{width:224px}
 .badge{display:inline-block;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:600}
 .toast{position:fixed;bottom:20px;right:20px;z-index:9999;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.15);transition:all 0.3s;background:#0f1117}
 </style>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Transcript — SchoolMasterPro</title>
-  
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="smp-supabase.js"></script>
 </head>
 <body class="bg-gray-50 font-sans">
 <div class="min-h-screen flex">
