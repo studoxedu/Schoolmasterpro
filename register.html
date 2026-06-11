@@ -305,24 +305,32 @@ const Reg = {
         email, password: pw,
         options: { data: { first_name: fn, last_name: ln, full_name: fn + ' ' + ln } }
       });
-      if (authErr) throw authErr;
-      const userId = authData.user?.id;
+
+      // 422 = user already exists — try signing in to get their ID
+      let userId = authData?.user?.id;
+      if (authErr && authErr.status === 422) {
+        const { data: signInData, error: signInErr } = await SMP.client.auth.signInWithPassword({ email, password: pw });
+        if (signInErr) throw new Error('An account with this email already exists. Please sign in instead.');
+        userId = signInData?.user?.id;
+      } else if (authErr) {
+        throw authErr;
+      }
       if (!userId) throw new Error('Account creation failed. Please try again.');
 
       // 2. Provision school
-      const { error: rpcErr } = await SMP.client.rpc('provision_school', {
-        p_name:         document.getElementById('school_name').value.trim(),
-        p_address:      document.getElementById('school_address').value.trim(),
-        p_state:        document.getElementById('school_state').value,
-        p_lga:          document.getElementById('school_lga').value.trim(),
-        p_phone:        document.getElementById('school_phone').value.trim(),
-        p_school_type:  document.getElementById('school_type').value,
-        p_plan:         'trial',
+      const { data: rpcData, error: rpcErr } = await SMP.client.rpc('provision_school', {
+        p_name:          document.getElementById('school_name').value.trim(),
+        p_address:       document.getElementById('school_address').value.trim(),
+        p_state:         document.getElementById('school_state').value,
+        p_lga:           document.getElementById('school_lga').value.trim(),
+        p_phone:         document.getElementById('school_phone').value.trim(),
+        p_school_type:   document.getElementById('school_type').value,
+        p_plan:          'trial',
         p_admin_user_id: userId,
         p_admin_email:   email,
         p_admin_name:    fn + ' ' + ln
       });
-      if (rpcErr) throw rpcErr;
+      if (rpcErr) throw new Error('School setup failed: ' + rpcErr.message);
 
       // 3. Welcome email (non-fatal)
       try {
@@ -332,7 +340,7 @@ const Reg = {
         });
       } catch(e) {}
 
-      // 4. Show success
+      // 4. Show success only if we get here with no errors
       document.getElementById('form-wrap').style.display = 'none';
       document.getElementById('success').style.display = 'block';
 
