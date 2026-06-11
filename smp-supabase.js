@@ -4,7 +4,7 @@
 // ============================================================
 
 const SMP_CONFIG = {
-  supabaseUrl: 'https://wpumtrgiffahttpsjjynoqaiw.supabase.co',
+  supabaseUrl: 'https://wpumtrgiffajjynoqaiw.supabase.co',
   supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndwdW10cmdpZmZhamp5bm9xYWl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4Nzc3OTQsImV4cCI6MjA5MzQ1Mzc5NH0.Iw1QdxnujWPekNavhes7ThWBLY8GjxdWD29fTNE5L98'
 };
 
