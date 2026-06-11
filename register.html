@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register — SchoolMasterPro</title>
+  <script src="supabase.min.js"></script>
+  <script src="smp-supabase.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#f8f9fa;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{background:#fff;border-radius:16px;padding:40px 36px;width:100%;max-width:480px;box-shadow:0 8px 32px rgba(0,0,0,0.1)}
+    .brand{text-align:center;margin-bottom:28px}
+    .brand-logo{width:44px;height:44px;background:#1a6b3c;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+    .brand-name{font-size:18px;font-weight:700;color:#0f1117}
+    .brand-sub{font-size:13px;color:#64748b;margin-top:3px}
+    .step-bar{display:flex;align-items:center;gap:8px;margin-bottom:28px}
+    .step{display:flex;align-items:center;gap:6px;font-size:12px;color:#94a3b8;font-weight:500}
+    .step.active{color:#1a6b3c}
+    .step.done{color:#64748b}
+    .step-num{width:22px;height:22px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+    .step.active .step-num{background:#1a6b3c;border-color:#1a6b3c;color:#fff}
+    .step.done .step-num{background:#e5e7eb;border-color:#e5e7eb;color:#374151}
+    .step-line{flex:1;height:1px;background:#e5e7eb}
+    h2{font-size:18px;font-weight:700;color:#0f1117;margin-bottom:4px;letter-spacing:-0.3px}
+    .sub{font-size:13px;color:#64748b;margin-bottom:24px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+    .field.full{grid-column:1/-1}
+    label{font-size:11px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:0.04em}
+    .req{color:#ef4444;margin-left:2px}
+    input,select{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 13px;font-size:14px;font-family:inherit;color:#0f1117;background:#fff;outline:none;transition:border-color 0.15s}
+    input:focus,select:focus{border-color:#1a6b3c}
+    input.err,select.err{border-color:#ef4444}
+    .err-msg{font-size:11px;color:#ef4444;display:none}
+    .err-msg.show{display:block}
+    .error-box{display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;color:#dc2626;margin-bottom:14px}
+    .pw-wrap{position:relative}
+    .pw-wrap input{padding-right:40px}
+    .pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;padding:4px;display:flex;align-items:center}
+    .strength-bar{height:3px;background:#e5e7eb;border-radius:2px;margin-top:5px;overflow:hidden}
+    .strength-fill{height:100%;border-radius:2px;transition:width 0.3s,background 0.3s;width:0}
+    .strength-label{font-size:10px;color:#94a3b8;margin-top:2px}
+    .actions{display:flex;gap:10px;margin-top:20px}
+    .btn{flex:1;padding:12px;border-radius:8px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;border:none}
+    .btn-primary{background:#1a6b3c;color:#fff}
+    .btn-primary:hover:not(:disabled){background:#155c32}
+    .btn-primary:disabled{opacity:0.6;cursor:not-allowed}
+    .btn-back{background:#fff;color:#374151;border:1.5px solid #e2e8f0;flex:0 0 auto;padding:12px 20px}
+    .btn-back:hover{background:#f9fafb}
+    .terms{display:flex;align-items:flex-start;gap:8px;margin-top:16px;font-size:12px;color:#64748b;line-height:1.5}
+    .terms input[type=checkbox]{width:14px;height:14px;flex-shrink:0;margin-top:2px;accent-color:#1a6b3c;cursor:pointer}
+    .terms a{color:#1a6b3c;text-decoration:none;font-weight:500}
+    .footer{text-align:center;margin-top:20px;font-size:13px;color:#64748b}
+    .footer a{color:#1a6b3c;font-weight:600;text-decoration:none}
+    .spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* Success */
+    .success{display:none;text-align:center;padding:20px 0}
+    .success-icon{width:64px;height:64px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:pop 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+    @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+    .success h2{font-size:20px;margin-bottom:8px}
+    .success p{font-size:14px;color:#64748b;line-height:1.6;margin-bottom:24px}
+    .btn-go{padding:12px 32px;background:#1a6b3c;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+    .btn-go:hover{background:#155c32}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">
+    <div class="brand-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M12 3L4 7v5c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V7L12 3z" fill="white"/>
+        <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="brand-name">SchoolMasterPro</div>
+    <div class="brand-sub">Register your school</div>
+  </div>
+
+  <!-- Step indicator -->
+  <div class="step-bar">
+    <div class="step active" id="ind-1"><div class="step-num">1</div><span>School details</span></div>
+    <div class="step-line"></div>
+    <div class="step" id="ind-2"><div class="step-num">2</div><span>Admin account</span></div>
+  </div>
+
+  <div id="form-wrap">
+
+    <!-- STEP 1: School details -->
+    <div id="step1">
+      <h2>About your school</h2>
+      <p class="sub">Tell us about the school you're registering.</p>
+      <div class="row">
+        <div class="field full">
+          <label>School Name <span class="req">*</span></label>
+          <input type="text" id="school_name" placeholder="e.g. Greenwood Academy" />
+          <span class="err-msg" id="err-school_name">School name is required</span>
+        </div>
+        <div class="field">
+          <label>State <span class="req">*</span></label>
+          <select id="school_state">
+            <option value="">Select state</option>
+            <option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option>
+            <option>Anambra</option><option>Bauchi</option><option>Bayelsa</option>
+            <option>Benue</option><option>Borno</option><option>Cross River</option>
+            <option>Delta</option><option>Ebonyi</option><option>Edo</option>
+            <option>Ekiti</option><option>Enugu</option><option>FCT</option>
+            <option>Gombe</option><option>Imo</option><option>Jigawa</option>
+            <option>Kaduna</option><option>Kano</option><option>Katsina</option>
+            <option>Kebbi</option><option>Kogi</option><option>Kwara</option>
+            <option>Lagos</option><option>Nasarawa</option><option>Niger</option>
+            <option>Ogun</option><option>Ondo</option><option>Osun</option>
+            <option>Oyo</option><option>Plateau</option><option>Rivers</option>
+            <option>Sokoto</option><option>Taraba</option><option>Yobe</option>
+            <option>Zamfara</option>
+          </select>
+          <span class="err-msg" id="err-school_state">Please select a state</span>
+        </div>
+        <div class="field">
+          <label>LGA / City</label>
+          <input type="text" id="school_lga" placeholder="e.g. Ikeja" />
+        </div>
+        <div class="field full">
+          <label>School Address</label>
+          <input type="text" id="school_address" placeholder="e.g. 12 Education Crescent" />
+        </div>
+        <div class="field">
+          <label>Phone Number <span class="req">*</span></label>
+          <input type="tel" id="school_phone" placeholder="08012345678" />
+          <span class="err-msg" id="err-school_phone">Enter a valid Nigerian phone number</span>
+        </div>
+        <div class="field">
+          <label>School Type</label>
+          <select id="school_type">
+            <option value="secondary">Secondary School</option>
+            <option value="primary">Primary School</option>
+            <option value="combined">Combined (Pri + Sec)</option>
+          </select>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="Reg.toStep2()">
+          Continue <span>→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Admin account -->
+    <div id="step2" style="display:none">
+      <h2>Admin account</h2>
+      <p class="sub">This will be the primary login for your school.</p>
+      <div class="error-box" id="error-box"></div>
+      <div class="row">
+        <div class="field">
+          <label>First Name <span class="req">*</span></label>
+          <input type="text" id="first_name" placeholder="Chidi" autocomplete="given-name" />
+          <span class="err-msg" id="err-first_name">Required</span>
+        </div>
+        <div class="field">
+          <label>Last Name <span class="req">*</span></label>
+          <input type="text" id="last_name" placeholder="Okafor" autocomplete="family-name" />
+          <span class="err-msg" id="err-last_name">Required</span>
+        </div>
+        <div class="field full">
+          <label>Email Address <span class="req">*</span></label>
+          <input type="email" id="admin_email" placeholder="admin@yourschool.edu.ng" autocomplete="email" />
+          <span class="err-msg" id="err-admin_email">Enter a valid email address</span>
+        </div>
+        <div class="field full">
+          <label>Password <span class="req">*</span></label>
+          <div class="pw-wrap">
+            <input type="password" id="admin_password" placeholder="Min. 8 characters" autocomplete="new-password" oninput="Reg.checkStrength(this.value)" />
+            <button type="button" class="pw-toggle" onclick="Reg.togglePw('admin_password', this)" tabindex="-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+          <div class="strength-label" id="strength-label"></div>
+          <span class="err-msg" id="err-admin_password">Password must be at least 8 characters</span>
+        </div>
+        <div class="field full">
+          <label>Confirm Password <span class="req">*</span></label>
+          <div class="pw-wrap">
+            <input type="password" id="confirm_pw" placeholder="Repeat your password" autocomplete="new-password" />
+            <button type="button" class="pw-toggle" onclick="Reg.togglePw('confirm_pw', this)" tabindex="-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <span class="err-msg" id="err-confirm_pw">Passwords do not match</span>
+        </div>
+      </div>
+      <div class="terms">
+        <input type="checkbox" id="agree_terms" />
+        <span>I agree to SchoolMasterPro's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I confirm I am authorised to register this school.</span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-back" onclick="Reg.toStep1()">← Back</button>
+        <button class="btn btn-primary" id="submit-btn" onclick="Reg.submit()">Create Account</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Success screen -->
+  <div class="success" id="success">
+    <div class="success-icon">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <path d="M6 16l6 6 14-14" stroke="#1a6b3c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2>Welcome aboard!</h2>
+    <p id="success-msg">Your school has been registered. Check your email for a confirmation link, then log in to get started.</p>
+    <button class="btn-go" onclick="window.location.href='login.html'">Go to Login →</button>
+  </div>
+
+  <div class="footer">Already have an account? <a href="login.html">Sign in</a></div>
+</div>
+
+<script>
+const Reg = {
+  toStep2() {
+    const name  = document.getElementById('school_name').value.trim();
+    const state = document.getElementById('school_state').value;
+    const phone = document.getElementById('school_phone').value.trim();
+    let ok = true;
+
+    this.setErr('school_name',  !name,                        'school_name');
+    this.setErr('school_state', !state,                       'school_state');
+    this.setErr('school_phone', !/^0[789]\d{9}$/.test(phone), 'school_phone');
+    if (!name || !state || !/^0[789]\d{9}$/.test(phone)) return;
+
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').style.display = 'block';
+    this.setIndicator(2);
+  },
+
+  toStep1() {
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step1').style.display = 'block';
+    this.setIndicator(1);
+  },
+
+  setIndicator(n) {
+    const i1 = document.getElementById('ind-1');
+    const i2 = document.getElementById('ind-2');
+    i1.className = 'step ' + (n === 1 ? 'active' : 'done');
+    i2.className = 'step ' + (n === 2 ? 'active' : '');
+  },
+
+  setErr(inputId, show, errId) {
+    document.getElementById(inputId)?.classList.toggle('err', show);
+    const e = document.getElementById('err-' + errId);
+    if (e) e.classList.toggle('show', show);
+  },
+
+  checkStrength(pw) {
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    const levels = [
+      {pct:'0%',   color:'',        text:''},
+      {pct:'25%',  color:'#ef4444', text:'Weak'},
+      {pct:'50%',  color:'#f97316', text:'Fair'},
+      {pct:'75%',  color:'#eab308', text:'Good'},
+      {pct:'100%', color:'#1a6b3c', text:'Strong'},
+    ];
+    document.getElementById('strength-fill').style.width    = levels[score].pct;
+    document.getElementById('strength-fill').style.background = levels[score].color;
+    document.getElementById('strength-label').textContent   = levels[score].text;
+  },
+
+  togglePw(id, btn) {
+    const inp = document.getElementById(id);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  },
+
+  async submit() {
+    const fn      = document.getElementById('first_name').value.trim();
+    const ln      = document.getElementById('last_name').value.trim();
+    const email   = document.getElementById('admin_email').value.trim();
+    const pw      = document.getElementById('admin_password').value;
+    const cpw     = document.getElementById('confirm_pw').value;
+    const agreed  = document.getElementById('agree_terms').checked;
+
+    this.setErr('first_name',    !fn,                                     'first_name');
+    this.setErr('last_name',     !ln,                                     'last_name');
+    this.setErr('admin_email',   !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), 'admin_email');
+    this.setErr('admin_password', pw.length < 8,                          'admin_password');
+    this.setErr('confirm_pw',    pw !== cpw,                              'confirm_pw');
+
+    if (!fn || !ln || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || pw.length < 8 || pw !== cpw) return;
+    if (!agreed) { this.showError('You must agree to the Terms of Service.'); return; }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Creating account…';
+    document.getElementById('error-box').style.display = 'none';
+
+    try {
+      // 1. Create auth user
+      const { data: authData, error: authErr } = await SMP.client.auth.signUp({
+        email, password: pw,
+        options: { data: { first_name: fn, last_name: ln, full_name: fn + ' ' + ln } }
+      });
+
+      // 422 = user already exists — try signing in to get their ID
+      let userId = authData?.user?.id;
+      if (authErr && authErr.status === 422) {
+        const { data: signInData, error: signInErr } = await SMP.client.auth.signInWithPassword({ email, password: pw });
+        if (signInErr) throw new Error('An account with this email already exists. Please sign in instead.');
+        userId = signInData?.user?.id;
+      } else if (authErr) {
+        throw authErr;
+      }
+      if (!userId) throw new Error('Account creation failed. Please try again.');
+
+      // 2. Provision school
+      const { data: rpcData, error: rpcErr } = await SMP.client.rpc('provision_school', {
+        p_name:          document.getElementById('school_name').value.trim(),
+        p_address:       document.getElementById('school_address').value.trim(),
+        p_state:         document.getElementById('school_state').value,
+        p_lga:           document.getElementById('school_lga').value.trim(),
+        p_phone:         document.getElementById('school_phone').value.trim(),
+        p_school_type:   document.getElementById('school_type').value,
+        p_plan:          'trial',
+        p_admin_user_id: userId,
+        p_admin_email:   email,
+        p_admin_name:    fn + ' ' + ln
+      });
+      if (rpcErr) throw new Error('School setup failed: ' + rpcErr.message);
+
+      // 3. Welcome email (non-fatal)
+      try {
+        await SMP.client.functions.invoke('send-notifications', {
+          body: { type: 'welcome', to_email: email, to_name: fn + ' ' + ln,
+                  school_name: document.getElementById('school_name').value.trim(), plan: 'trial' }
+        });
+      } catch(e) {}
+
+      // 4. Show success only if we get here with no errors
+      document.getElementById('form-wrap').style.display = 'none';
+      document.getElementById('success').style.display = 'block';
+
+    } catch(e) {
+      this.showError(e.message || 'Registration failed. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    }
+  },
+
+  showError(msg) {
+    const b = document.getElementById('error-box');
+    b.textContent = msg;
+    b.style.display = 'block';
+  }
+};
+
+// Enter key on step 2 submits
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('confirm_pw').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') Reg.submit();
+  });
+});
+</script>
+</body>
+</html>
