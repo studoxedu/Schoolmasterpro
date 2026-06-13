@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — SchoolMasterPro</title>
+  <link rel="stylesheet" href="smp-styles.css" />
+</head>
+<body class="bg-white text-black min-h-screen">
+
+  <header class="border-b border-black px-6 py-4 flex items-center justify-between">
+    <h1 class="text-lg font-semibold tracking-tight">SchoolMasterPro</h1>
+    <button id="logout-btn" class="border border-black px-3 py-1.5 text-sm font-medium hover:bg-gray-100 transition">
+      Log Out
+    </button>
+  </header>
+
+  <main class="px-6 py-8 max-w-3xl mx-auto">
+
+    <div id="error-banner" class="hidden border border-black bg-gray-50 px-3 py-2 text-sm mb-6"></div>
+
+    <div id="loading" class="text-sm text-gray-600">Loading your dashboard...</div>
+
+    <div id="dashboard-content" class="hidden space-y-6">
+      <div>
+        <h2 id="school-name" class="text-2xl font-bold"></h2>
+        <p id="school-meta" class="text-sm text-gray-600 mt-1"></p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="border border-black p-4">
+          <p class="text-xs uppercase tracking-wide text-gray-500">Plan</p>
+          <p id="school-plan" class="text-lg font-semibold mt-1"></p>
+        </div>
+        <div class="border border-black p-4">
+          <p class="text-xs uppercase tracking-wide text-gray-500">Status</p>
+          <p id="school-status" class="text-lg font-semibold mt-1"></p>
+        </div>
+        <div class="border border-black p-4">
+          <p class="text-xs uppercase tracking-wide text-gray-500">School Code</p>
+          <p id="school-code" class="text-lg font-semibold mt-1"></p>
+        </div>
+      </div>
+
+      <div class="border border-black p-4">
+        <p class="text-xs uppercase tracking-wide text-gray-500">Logged in as</p>
+        <p id="operator-name" class="text-base font-medium mt-1"></p>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="supabase.min.js"></script>
+  <script src="smp-supabase.js"></script>
+  <script>
+    var errorBanner = document.getElementById("error-banner");
+    var loading = document.getElementById("loading");
+    var dashboardContent = document.getElementById("dashboard-content");
+
+    function showError(message) {
+      loading.classList.add("hidden");
+      errorBanner.textContent = message;
+      errorBanner.classList.remove("hidden");
+    }
+
+    async function loadDashboard() {
+      var session = await SMP.getSession();
+
+      if (!session) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      var userId = session.user.id;
+      var result = await SMP.getMyOperatorAndSchool(userId);
+
+      if (result.error) {
+        showError("Failed to load dashboard: " + result.error.message);
+        return;
+      }
+
+      if (!result.data) {
+        showError("No operator record found for your account. Please contact support.");
+        return;
+      }
+
+      var operator = result.data;
+      var school = operator.schools;
+
+      if (!school) {
+        showError("Your account is not linked to a school. Please contact support.");
+        return;
+      }
+
+      document.getElementById("school-name").textContent = school.name;
+      document.getElementById("school-meta").textContent =
+        "Trial expires: " + (school.trial_expires_at ? school.trial_expires_at : "N/A");
+      document.getElementById("school-plan").textContent = capitalize(school.plan);
+      document.getElementById("school-status").textContent = capitalize(school.status);
+      document.getElementById("school-code").textContent = school.school_code || "—";
+      document.getElementById("operator-name").textContent =
+        operator.full_name + " (" + session.user.email + ")";
+
+      loading.classList.add("hidden");
+      dashboardContent.classList.remove("hidden");
+    }
+
+    function capitalize(s) {
+      if (!s) return "—";
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    document.getElementById("logout-btn").addEventListener("click", async function () {
+      var result = await SMP.signOut();
+      if (result.error) {
+        showError("Logout failed: " + result.error.message);
+        return;
+      }
+      window.location.href = "login.html";
+    });
+
+    // Run only after window load fires, per architecture rules.
+    window.addEventListener("load", function () {
+      loadDashboard();
+    });
+  </script>
+</body>
+</html>
