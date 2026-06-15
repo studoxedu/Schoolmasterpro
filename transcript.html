@@ -265,15 +265,15 @@ aside.w-56{width:224px}
       <p class="text-xs text-gray-400 mt-1" id="school-name-nav">Loading...</p>
     </div>
     <nav class="flex-1 p-3 space-y-1 text-sm overflow-y-auto">
-      <a href="index.html"           class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📊 Dashboard</a>
-      <a href="students.html"        class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👥 Students</a>
-      <a href="reports.html"         class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📄 Reports</a>
-      <a href="term-comparison.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📈 Term Compare</a>
-      <a href="transcript.html"      class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 text-white">📜 Transcript</a>
-      <a href="audit.html"           class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔍 Audit Log</a>
+      <a href="/"           class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📊 Dashboard</a>
+      <a href="/students"        class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👥 Students</a>
+      <a href="/reports"         class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📄 Reports</a>
+      <a href="/term-comparison" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📈 Term Compare</a>
+      <a href="/transcript"      class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 text-white">📜 Transcript</a>
+      <a href="/audit"           class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔍 Audit Log</a>
     </nav>
     <div class="p-3 border-t border-gray-700">
-      <button onclick="SMP.auth.signOut().then(()=>location.href='login.html')" class="w-full text-left flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white text-sm">🚪 Sign Out</button>
+      <button onclick="SMP.auth.signOut().then(()=>location.href='/login')" class="w-full text-left flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white text-sm">🚪 Sign Out</button>
     </div>
   </aside>
 
@@ -336,7 +336,7 @@ let schoolData = null;
 const TranscriptPage = {
   async init() {
     const session = await SMP.auth.getSession();
-    if (!session) { window.location.href = 'login.html'; return; }
+    if (!session) { window.location.href = '/login'; return; }
     schoolData = await SMP.school.get();
     if (schoolData) document.getElementById('school-name-nav').textContent = schoolData.name;
 

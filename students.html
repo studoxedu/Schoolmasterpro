@@ -250,30 +250,30 @@ aside.w-56{width:224px}
   <aside class="w-56 bg-gray-900 text-white flex flex-col fixed inset-y-0 z-30">
     <div class="p-4 border-b border-gray-700"><div class="flex items-center gap-2"><div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center text-xs font-bold">S</div><span class="font-semibold text-sm">SchoolMasterPro</span></div><p class="text-xs text-gray-400 mt-1" id="school-name-nav">Loading...</p></div>
     <nav class="flex-1 p-3 space-y-1 text-sm overflow-y-auto">
-      <a href="index.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📊 Dashboard</a>
-      <a href="students.html" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 text-white">👥 Students</a>
-      <a href="scores.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📝 Scores</a>
-      <a href="fees.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">💰 Fees</a>
-      <a href="receipts.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🧾 Receipts</a>
-      <a href="reports.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📄 Reports</a>
-      <a href="staff.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👤 Staff</a>
-      <a href="bulk-upload.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📥 Bulk Upload</a>
-      <a href="notifications.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔔 Notifications</a>
-      <a href="documents.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📁 Documents</a>
-      <a href="promotion.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🎓 Promotion</a>
-      <a href="term-settings.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">⚙️ Settings</a>
-      <a href="term-comparison.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📈 Term Compare</a>
-      <a href="transcript.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📜 Transcript</a>
-      <a href="audit.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔍 Audit Log</a>
+      <a href="/" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📊 Dashboard</a>
+      <a href="/students" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 text-white">👥 Students</a>
+      <a href="/scores" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📝 Scores</a>
+      <a href="/fees" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">💰 Fees</a>
+      <a href="/receipts" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🧾 Receipts</a>
+      <a href="/reports" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📄 Reports</a>
+      <a href="/staff" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👤 Staff</a>
+      <a href="/bulk-upload" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📥 Bulk Upload</a>
+      <a href="/notifications" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔔 Notifications</a>
+      <a href="/documents" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📁 Documents</a>
+      <a href="/promotion" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🎓 Promotion</a>
+      <a href="/term-settings" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">⚙️ Settings</a>
+      <a href="/term-comparison" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📈 Term Compare</a>
+      <a href="/transcript" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📜 Transcript</a>
+      <a href="/audit" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔍 Audit Log</a>
     </nav>
-    <div class="p-3 border-t border-gray-700"><button onclick="SMP.auth.signOut().then(()=>location.href='login.html')" class="w-full text-left flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white text-sm">🚪 Sign Out</button></div>
+    <div class="p-3 border-t border-gray-700"><button onclick="SMP.auth.signOut().then(()=>location.href='/login')" class="w-full text-left flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white text-sm">🚪 Sign Out</button></div>
   </aside>
   <main class="ml-56 flex-1 p-6">
     <div class="max-w-5xl mx-auto">
       <div class="flex items-center justify-between mb-6">
         <div><h1 class="text-2xl font-bold text-gray-900">Students</h1><p class="text-gray-500 text-sm mt-1" id="student-count">Loading...</p></div>
         <div class="flex gap-2">
-          <a href="bulk-upload.html" class="px-3 py-2 border border-gray-200 bg-white text-sm rounded-lg text-gray-700 hover:bg-gray-50">📥 Bulk Import</a>
+          <a href="/bulk-upload" class="px-3 py-2 border border-gray-200 bg-white text-sm rounded-lg text-gray-700 hover:bg-gray-50">📥 Bulk Import</a>
           <button onclick="StudentsPage.openEnroll()" class="px-4 py-2 bg-green-700 text-white text-sm font-medium rounded-lg hover:bg-green-800">+ Enrol Student</button>
         </div>
       </div>
@@ -356,7 +356,7 @@ const StudentsPage = {
   offset:0, limit:50, total:0, searchQ:'',
 
   async init() {
-    const s = await SMP.auth.getSession(); if(!s){window.location.href='login.html';return;}
+    const s = await SMP.auth.getSession(); if(!s){window.location.href='/login';return;}
     schoolData = await SMP.school.get();
     if(schoolData) document.getElementById('school-name-nav').textContent = schoolData.name;
     const {data:cl} = await SMP.setup.getClasses();
@@ -392,8 +392,8 @@ const StudentsPage = {
         <td class="px-4 py-3 text-xs text-gray-500">${s.gender==='M'?'Male':'Female'}</td>
         <td class="px-4 py-3"><span class="px-2 py-0.5 text-xs rounded-full ${s.status==='active'?'bg-green-100 text-green-800':'bg-gray-100 text-gray-500'}">${s.status}</span></td>
         <td class="px-4 py-3 flex gap-2">
-          <a href="student-profile.html?id=${s.id}" class="text-xs text-blue-600 hover:underline">View</a>
-          <a href="transcript.html?student=${s.id}" class="text-xs text-purple-600 hover:underline">Transcript</a>
+          <a href="/student-profile?id=${s.id}" class="text-xs text-blue-600 hover:underline">View</a>
+          <a href="/transcript?student=${s.id}" class="text-xs text-purple-600 hover:underline">Transcript</a>
         </td>
       </tr>`).join('');
   },

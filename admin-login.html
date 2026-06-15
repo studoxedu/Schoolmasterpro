@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -58,7 +58,7 @@
 
     <button class="btn" id="login-btn" onclick="doAdminLogin()">Sign In as Platform Admin</button>
 
-    <div class="back-link"><a href="login.html">← Back to school login</a></div>
+    <div class="back-link"><a href="/login">← Back to school login</a></div>
   </div>
 
   <script src="supabase.min.js"></script>
@@ -113,7 +113,7 @@
         }
 
         // Step 3: all good
-        window.location.href = 'admin.html';
+        window.location.href = '/admin';
       } catch (e) {
         showError('Something went wrong. Please try again.');
       } finally {
@@ -128,7 +128,7 @@
       if (!s) return;
       try {
         const { data: isAdmin } = await SMP.client.rpc('is_platform_admin');
-        if (isAdmin) window.location.href = 'admin.html';
+        if (isAdmin) window.location.href = '/admin';
       } catch (_) {}
     });
   </script>

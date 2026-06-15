@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -214,11 +214,11 @@ let _adminVerified = false;
 
 async function guardAdmin() {
   const s = await SMP.auth.getSession();
-  if (!s) { window.location.href = 'admin-login.html'; return false; }
+  if (!s) { window.location.href = '/admin-login'; return false; }
   const { data: isAdmin, error } = await SMP.client.rpc('is_platform_admin');
   if (error || !isAdmin) {
     await SMP.auth.signOut();
-    window.location.href = 'admin-login.html';
+    window.location.href = '/admin-login';
     return false;
   }
   _adminVerified = true;
@@ -227,7 +227,7 @@ async function guardAdmin() {
 
 async function doSignOut() {
   await SMP.auth.signOut();
-  window.location.href = 'admin-login.html';
+  window.location.href = '/admin-login';
 }
 
 // ── Utility ──────────────────────────────────────────────────

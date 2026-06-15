@@ -275,15 +275,15 @@ document.getElementById('app-root').innerHTML = `
       <p class="text-xs text-gray-400 mt-1" id="school-name-nav">Loading...</p>
     </div>
     <nav class="flex-1 p-3 space-y-1 text-sm overflow-y-auto">
-      <a href="index.html"           class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📊 Dashboard</a>
-      <a href="students.html"        class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👥 Students</a>
-      <a href="scores.html"          class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📝 Scores</a>
-      <a href="fees.html"            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">💰 Fees</a>
-      <a href="reports.html"         class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📄 Reports</a>
-      <a href="staff.html"           class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👤 Staff</a>
-      <a href="notifications.html"   class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔔 Notifications</a>
-      <a href="audit.html"           class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 text-white">🔍 Audit Log</a>
-      <a href="term-comparison.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📈 Term Compare</a>
+      <a href="/"           class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📊 Dashboard</a>
+      <a href="/students"        class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👥 Students</a>
+      <a href="/scores"          class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📝 Scores</a>
+      <a href="/fees"            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">💰 Fees</a>
+      <a href="/reports"         class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📄 Reports</a>
+      <a href="/staff"           class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👤 Staff</a>
+      <a href="/notifications"   class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔔 Notifications</a>
+      <a href="/audit"           class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 text-white">🔍 Audit Log</a>
+      <a href="/term-comparison" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📈 Term Compare</a>
     </nav>
     <div class="p-3 border-t border-gray-700">
       <button onclick="AuditPage.logout()" class="w-full text-left flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white text-sm">🚪 Sign Out</button>
@@ -366,7 +366,7 @@ const AuditPage = {
 
   async init() {
     const session = await SMP.auth.getSession();
-    if (!session) { window.location.href = 'login.html'; return; }
+    if (!session) { window.location.href = '/login'; return; }
     const school = await SMP.school.get();
     if (school) document.getElementById('school-name-nav').textContent = school.name;
     this.load();
@@ -460,7 +460,7 @@ const AuditPage = {
 
   async prev() { if (this.offset >= this.limit) { this.offset -= this.limit; await this.fetch(); } },
   async next() { if (this.offset + this.limit < this.total) { this.offset += this.limit; await this.fetch(); } },
-  async logout() { await SMP.auth.signOut(); window.location.href = 'login.html'; }
+  async logout() { await SMP.auth.signOut(); window.location.href = '/login'; }
 };
 
 document.addEventListener('DOMContentLoaded', () => AuditPage.init());
