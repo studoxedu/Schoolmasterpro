@@ -1,295 +1,701 @@
-<!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Platform Admin — SchoolMasterPro</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style id="smp-core-styles">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="theme-color" content="#0f1117"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <title>Platform Admin — SchoolMasterPro</title>
+<style id="smp-core-styles">
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{line-height:1.5;-webkit-text-size-adjust:100%}
+html{line-height:1.5}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#f8f9fa;color:#0f1117}
 a{color:inherit;text-decoration:none}
 button,input,select,textarea{font-family:inherit;font-size:100%}
-img{display:block;max-width:100%}
-
-/* ── Layout ── */
-.flex{display:flex}.flex-1{flex:1 1 0%}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}
-.flex-shrink-0{flex-shrink:0}.inline-flex{display:inline-flex}
-.grid{display:grid}.hidden{display:none}.block{display:block}.inline-block{display:inline-block}
-.items-center{align-items:center}.items-start{align-items:flex-start}.items-end{align-items:flex-end}
-.justify-center{justify-content:center}.justify-between{justify-content:space-between}.justify-end{justify-content:flex-end}
-.self-center{align-self:center}
-.gap-1{gap:4px}.gap-2{gap:8px}.gap-3{gap:12px}.gap-4{gap:16px}.gap-5{gap:20px}.gap-6{gap:24px}.gap-8{gap:32px}
-.space-y-1>*+*{margin-top:4px}.space-y-2>*+*{margin-top:8px}.space-y-3>*+*{margin-top:12px}
-.space-y-4>*+*{margin-top:16px}.space-y-6>*+*{margin-top:24px}
-.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}
+/* Layout */
+.flex{display:flex}.flex-1{flex:1 1 0%}.flex-col{flex-direction:column}
+.flex-wrap{flex-wrap:wrap}.flex-shrink-0{flex-shrink:0}
+.grid{display:grid}.hidden{display:none}.block{display:block}
+.items-center{align-items:center}.items-start{align-items:flex-start}
+.justify-center{justify-content:center}.justify-between{justify-content:space-between}
+.gap-1{gap:4px}.gap-2{gap:8px}.gap-3{gap:12px}.gap-4{gap:16px}.gap-6{gap:24px}
+.space-y-2>*+*{margin-top:8px}.space-y-3>*+*{margin-top:12px}.space-y-4>*+*{margin-top:16px}
 .grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-.col-span-2{grid-column:span 2/span 2}
-.min-h-screen{min-height:100vh}.min-w-48{min-width:192px}
-.w-full{width:100%}.h-full{height:100%}
-.w-2{width:8px}.h-2{height:8px}.w-3{height:12px}.w-4{width:16px}.h-4{height:16px}
-.w-5{width:20px}.h-5{height:20px}.w-6{width:24px}.h-6{height:24px}
-.w-8{width:32px}.h-8{height:32px}.w-9{width:36px}.h-9{height:36px}
-.w-10{width:40px}.h-10{height:40px}.w-12{width:48px}.h-12{height:48px}
-.w-14{width:56px}.h-14{height:56px}.w-16{width:64px}.h-16{height:64px}
-.w-24{width:96px}.w-32{width:128px}.w-40{width:160px}.w-48{width:192px}
-.w-56{width:224px}.w-64{width:256px}.max-w-md{max-width:28rem}
-.max-w-lg{max-width:32rem}.max-w-xl{max-width:36rem}.max-w-2xl{max-width:42rem}
-.max-w-4xl{max-width:56rem}.max-w-5xl{max-width:64rem}.max-w-6xl{max-width:72rem}
-.max-h-40{max-height:160px}.max-h-48{max-height:192px}.max-h-[80vh]{max-height:80vh}
-.max-h-[90vh]{max-height:90vh}
-
-/* ── Position ── */
+.min-h-screen{min-height:100vh}.w-full{width:100%}
+.w-60{width:240px}.max-w-6xl{max-width:72rem}.max-w-4xl{max-width:56rem}
+/* Position */
 .relative{position:relative}.absolute{position:absolute}.fixed{position:fixed}.sticky{position:sticky}
-.inset-0{inset:0}.inset-y-0{top:0;bottom:0}.top-0{top:0}.bottom-0{bottom:0}
-.left-0{left:0}.right-0{right:0}.top-4{top:16px}.right-4{right:16px}
-.bottom-4{bottom:16px}.z-10{z-index:10}.z-30{z-index:30}.z-50{z-index:50}
-.ml-56{margin-left:224px}.ml-auto{margin-left:auto}.mr-auto{margin-right:auto}
+.inset-0{inset:0}.inset-y-0{top:0;bottom:0}.top-0{top:0}.z-30{z-index:30}.z-50{z-index:50}
+.left-0{left:0}.right-0{right:0}
+.ml-60{margin-left:240px}.ml-auto{margin-left:auto}.mr-auto{margin-right:auto}
 .mx-auto{margin-left:auto;margin-right:auto}
 .mt-1{margin-top:4px}.mt-2{margin-top:8px}.mt-3{margin-top:12px}.mt-4{margin-top:16px}
-.mt-5{margin-top:20px}.mt-6{margin-top:24px}.mt-8{margin-top:32px}
-.mb-1{margin-bottom:4px}.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}
-.mb-4{margin-bottom:16px}.mb-5{margin-bottom:20px}.mb-6{margin-bottom:24px}
-.mb-8{margin-bottom:32px}.mb-10{margin-bottom:40px}
-.mr-1{margin-right:4px}.mr-2{margin-right:8px}.ml-1{margin-left:4px}.ml-2{margin-left:8px}
-
-/* ── Padding ── */
-.p-1{padding:4px}.p-2{padding:8px}.p-3{padding:12px}.p-4{padding:16px}
-.p-5{padding:20px}.p-6{padding:24px}.p-8{padding:32px}
-.px-2{padding-left:8px;padding-right:8px}.px-3{padding-left:12px;padding-right:12px}
-.px-4{padding-left:16px;padding-right:16px}.px-5{padding-left:20px;padding-right:20px}
-.px-6{padding-left:24px;padding-right:24px}.py-1{padding-top:4px;padding-bottom:4px}
-.py-1.5{padding-top:6px;padding-bottom:6px}.py-2{padding-top:8px;padding-bottom:8px}
-.py-2.5{padding-top:10px;padding-bottom:10px}.py-3{padding-top:12px;padding-bottom:12px}
-.py-4{padding-top:16px;padding-bottom:16px}.py-6{padding-top:24px;padding-bottom:24px}
-.py-8{padding-top:32px;padding-bottom:32px}.py-10{padding-top:40px;padding-bottom:40px}
-.py-12{padding-top:48px;padding-bottom:48px}.py-20{padding-top:80px;padding-bottom:80px}
-.pt-4{padding-top:16px}.pb-4{padding-bottom:16px}.pl-3{padding-left:12px}.pr-3{padding-right:12px}
-
-/* ── Typography ── */
+.mt-6{margin-top:24px}.mb-1{margin-bottom:4px}.mb-2{margin-bottom:8px}
+.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}.mb-6{margin-bottom:24px}
+.mr-2{margin-right:8px}
+/* Padding */
+.p-2{padding:8px}.p-3{padding:12px}.p-4{padding:16px}.p-5{padding:20px}.p-6{padding:24px}
+.px-3{padding-left:12px;padding-right:12px}.px-4{padding-left:16px;padding-right:16px}
+.px-5{padding-left:20px;padding-right:20px}
+.py-1{padding-top:4px;padding-bottom:4px}.py-2{padding-top:8px;padding-bottom:8px}
+.py-3{padding-top:12px;padding-bottom:12px}.py-4{padding-top:16px;padding-bottom:16px}
+.py-6{padding-top:24px;padding-bottom:24px}.py-8{padding-top:32px;padding-bottom:32px}
+.py-10{padding-top:40px;padding-bottom:40px}.py-12{padding-top:48px;padding-bottom:48px}
+.pt-4{padding-top:16px}.pb-4{padding-bottom:16px}
+/* Typography */
 .text-xs{font-size:12px;line-height:16px}.text-sm{font-size:14px;line-height:20px}
 .text-base{font-size:16px;line-height:24px}.text-lg{font-size:18px;line-height:28px}
 .text-xl{font-size:20px;line-height:28px}.text-2xl{font-size:24px;line-height:32px}
-.text-3xl{font-size:30px;line-height:36px}.text-4xl{font-size:36px;line-height:40px}
-.text-5xl{font-size:48px;line-height:1}
-.font-normal{font-weight:400}.font-medium{font-weight:500}.font-semibold{font-weight:600}
-.font-bold{font-weight:700}
-.leading-none{line-height:1}.leading-tight{line-height:1.25}.leading-snug{line-height:1.375}
-.leading-normal{line-height:1.5}.leading-relaxed{line-height:1.625}.leading-loose{line-height:2}
-.tracking-wide{letter-spacing:0.025em}.tracking-wider{letter-spacing:0.05em}
-.tracking-widest{letter-spacing:0.1em}.tracking-tight{letter-spacing:-0.025em}
-.uppercase{text-transform:uppercase}.lowercase{text-transform:lowercase}.capitalize{text-transform:capitalize}
+.text-3xl{font-size:30px;line-height:36px}
+.font-medium{font-weight:500}.font-semibold{font-weight:600}.font-bold{font-weight:700}
+.font-mono{font-family:'DM Mono','Courier New',monospace}
+.tracking-wide{letter-spacing:0.025em}.uppercase{text-transform:uppercase}
 .text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}
-.whitespace-nowrap{white-space:nowrap}.whitespace-pre-wrap{white-space:pre-wrap}
 .truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.break-all{word-break:break-all}.line-through{text-decoration:line-through}
-.underline{text-decoration:underline}.no-underline{text-decoration:none}
-
-/* ── Colors — text ── */
-.text-white{color:#fff}.text-black{color:#000}
-.text-gray-100{color:#f3f4f6}.text-gray-200{color:#e5e7eb}.text-gray-300{color:#d1d5db}
-.text-gray-400{color:#9ca3af}.text-gray-500{color:#6b7280}.text-gray-600{color:#4b5563}
-.text-gray-700{color:#374151}.text-gray-800{color:#1f2937}.text-gray-900{color:#111827}
+.whitespace-nowrap{white-space:nowrap}
+/* Colors */
+.text-white{color:#fff}.text-gray-300{color:#d1d5db}.text-gray-400{color:#9ca3af}
+.text-gray-500{color:#6b7280}.text-gray-600{color:#4b5563}.text-gray-700{color:#374151}
+.text-gray-800{color:#1f2937}.text-gray-900{color:#111827}
 .text-green-600{color:#16a34a}.text-green-700{color:#15803d}.text-green-800{color:#166534}
-.text-green-900{color:#14532d}.text-green-100{color:#dcfce7}
-.text-blue-600{color:#2563eb}.text-blue-700{color:#1d4ed8}.text-blue-800{color:#1e40af}
-.text-red-400{color:#f87171}.text-red-500{color:#ef4444}.text-red-600{color:#dc2626}
-.text-red-700{color:#b91c1c}.text-red-800{color:#991b1b}.text-red-900{color:#7f1d1d}
-.text-yellow-600{color:#ca8a04}.text-yellow-700{color:#a16207}.text-yellow-800{color:#854d0e}
-.text-orange-500{color:#f97316}.text-orange-600{color:#ea580c}
-.text-purple-600{color:#9333ea}.text-purple-700{color:#7e22ce}.text-purple-800{color:#6b21a8}
-.text-indigo-600{color:#4f46e5}.text-indigo-700{color:#4338ca}
-
-/* ── Colors — background ── */
-.bg-white{background:#fff}.bg-black{background:#000}
-.bg-transparent{background:transparent}
-.bg-gray-50{background:#f9fafb}.bg-gray-100{background:#f3f4f6}.bg-gray-200{background:#e5e7eb}
+.text-blue-600{color:#2563eb}.text-blue-700{color:#1d4ed8}
+.text-red-500{color:#ef4444}.text-red-600{color:#dc2626}.text-red-700{color:#b91c1c}
+.text-yellow-600{color:#ca8a04}.text-purple-600{color:#9333ea}.text-purple-700{color:#7e22ce}
+.text-orange-500{color:#f97316}
+.bg-white{background:#fff}.bg-gray-50{background:#f9fafb}.bg-gray-100{background:#f3f4f6}
 .bg-gray-700{background:#374151}.bg-gray-800{background:#1f2937}.bg-gray-900{background:#111827}
-.bg-green-50{background:#f0fdf4}.bg-green-100{background:#dcfce7}.bg-green-600{background:#16a34a}
-.bg-green-700{background:#15803d}.bg-green-800{background:#166534}
-.bg-blue-50{background:#eff6ff}.bg-blue-100{background:#dbeafe}.bg-blue-500{background:#3b82f6}
-.bg-blue-600{background:#2563eb}.bg-blue-700{background:#1d4ed8}
-.bg-red-50{background:#fef2f2}.bg-red-100{background:#fee2e2}.bg-red-200{background:#fecaca}
-.bg-red-600{background:#dc2626}.bg-red-700{background:#b91c1c}
-.bg-yellow-50{background:#fefce8}.bg-yellow-100{background:#fef9c3}.bg-yellow-400{background:#facc15}
-.bg-orange-100{background:#ffedd5}.bg-purple-100{background:#f3e8ff}.bg-purple-600{background:#9333ea}
-.bg-indigo-600{background:#4f46e5}
-.bg-black/50{background:rgba(0,0,0,0.5)}
-
-/* ── Colors — border ── */
-.border{border-width:1px}.border-0{border-width:0}.border-2{border-width:2px}
-.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}
-.border-l{border-left-width:1px}.border-r{border-right-width:1px}
-.border-l-4{border-left-width:4px}
+.bg-green-50{background:#f0fdf4}.bg-green-100{background:#dcfce7}.bg-green-700{background:#15803d}
+.bg-blue-50{background:#eff6ff}.bg-blue-100{background:#dbeafe}.bg-blue-600{background:#2563eb}
+.bg-red-50{background:#fef2f2}.bg-red-100{background:#fee2e2}.bg-red-600{background:#dc2626}
+.bg-yellow-50{background:#fefce8}.bg-yellow-100{background:#fef9c3}
+.bg-purple-50{background:#faf5ff}.bg-purple-100{background:#f3e8ff}.bg-purple-700{background:#7e22ce}
+.bg-orange-100{background:#ffedd5}
+/* Border */
+.border{border-width:1px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}
 .border-solid{border-style:solid}
 .border-gray-100{border-color:#f3f4f6}.border-gray-200{border-color:#e5e7eb}
-.border-gray-300{border-color:#d1d5db}.border-gray-400{border-color:#9ca3af}
-.border-gray-700{border-color:#374151}
-.border-green-200{border-color:#bbf7d0}.border-green-400{border-color:#4ade80}
-.border-green-600{border-color:#16a34a}
-.border-blue-200{border-color:#bfdbfe}.border-blue-300{border-color:#93c5fd}
+.border-gray-300{border-color:#d1d5db}.border-gray-700{border-color:#374151}
+.border-green-200{border-color:#bbf7d0}.border-blue-200{border-color:#bfdbfe}
 .border-red-200{border-color:#fecaca}.border-yellow-200{border-color:#fef08a}
-.border-orange-200{border-color:#fed7aa}.border-purple-200{border-color:#e9d5ff}
+.border-purple-200{border-color:#e9d5ff}.border-orange-200{border-color:#fed7aa}
 .border-transparent{border-color:transparent}
 .divide-y>*+*{border-top-width:1px;border-style:solid;border-color:#e5e7eb}
-
-/* ── Border radius ── */
+/* Radius */
 .rounded{border-radius:4px}.rounded-md{border-radius:6px}.rounded-lg{border-radius:8px}
 .rounded-xl{border-radius:12px}.rounded-2xl{border-radius:16px}.rounded-full{border-radius:9999px}
-.rounded-t-xl{border-top-left-radius:12px;border-top-right-radius:12px}
-.rounded-b-xl{border-bottom-left-radius:12px;border-bottom-right-radius:12px}
-
-/* ── Shadow ── */
-.shadow{box-shadow:0 1px 3px rgba(0,0,0,0.1),0 1px 2px rgba(0,0,0,0.06)}
+/* Shadow */
+.shadow{box-shadow:0 1px 3px rgba(0,0,0,0.1)}
 .shadow-md{box-shadow:0 4px 6px rgba(0,0,0,0.07),0 2px 4px rgba(0,0,0,0.06)}
 .shadow-lg{box-shadow:0 10px 15px rgba(0,0,0,0.1),0 4px 6px rgba(0,0,0,0.05)}
-.shadow-xl{box-shadow:0 20px 25px rgba(0,0,0,0.1),0 10px 10px rgba(0,0,0,0.04)}
-
-/* ── Overflow ── */
-.overflow-hidden{overflow:hidden}.overflow-auto{overflow:auto}
-.overflow-y-auto{overflow-y:auto}.overflow-x-auto{overflow-x:auto}
-
-/* ── Cursor / pointer ── */
-.cursor-pointer{cursor:pointer}.cursor-not-allowed{cursor:not-allowed}
-.select-none{user-select:none}
-
-/* ── Opacity ── */
-.opacity-0{opacity:0}.opacity-40{opacity:0.4}.opacity-50{opacity:0.5}
-.opacity-60{opacity:0.6}.opacity-75{opacity:0.75}.opacity-100{opacity:1}
-.disabled:opacity-40:disabled{opacity:0.4}
-
-/* ── Transition ── */
-.transition{transition:all 0.15s ease}.transition-colors{transition:color 0.15s,background-color 0.15s,border-color 0.15s}
-.transition-opacity{transition:opacity 0.15s}.transition-transform{transition:transform 0.15s}
-.duration-150{transition-duration:150ms}.duration-200{transition-duration:200ms}
-.ease-in-out{transition-timing-function:ease-in-out}
-
-/* ── Transform ── */
-.translate-x-0{transform:translateX(0)}.translate-y-0{transform:translateY(0)}
-.-translate-x-full{transform:translateX(-100%)}
-.scale-100{transform:scale(1)}.scale-95{transform:scale(0.95)}
-
-/* ── Table ── */
+/* Overflow */
+.overflow-hidden{overflow:hidden}.overflow-auto{overflow:auto}.overflow-x-auto{overflow-x:auto}
+.overflow-y-auto{overflow-y:auto}
+/* Misc */
+.cursor-pointer{cursor:pointer}.select-none{user-select:none}
+.opacity-60{opacity:0.6}.transition{transition:all 0.15s ease}
+.list-none{list-style:none}
 table{border-collapse:collapse;width:100%}
-.table-auto{table-layout:auto}.w-full{width:100%}
-
-/* ── Forms ── */
-input,select,textarea{
-  width:100%;border:1.5px solid #e2e8f0;border-radius:8px;
-  padding:10px 14px;font-size:14px;color:#0f1117;
-  background:#fff;outline:none;transition:border-color 0.15s;
-}
-input:focus,select:focus,textarea:focus{border-color:#1a6b3c}
-input[type=checkbox],input[type=radio]{
-  width:auto;padding:0;accent-color:#1a6b3c;cursor:pointer;
-}
-textarea{resize:vertical;min-height:80px}
-
-/* ── Sidebar ── */
-aside.w-56{width:224px}
-
-/* ── Hover states ── */
-.hover:bg-gray-50:hover{background:#f9fafb}
-.hover:bg-gray-700:hover{background:#374151}
-.hover:bg-gray-800:hover{background:#1f2937}
-.hover:bg-green-50:hover{background:#f0fdf4}
-.hover:bg-green-800:hover{background:#166534}
-.hover:bg-blue-700:hover{background:#1d4ed8}
-.hover:bg-red-700:hover{background:#b91c1c}
-.hover:text-white:hover{color:#fff}
-.hover:text-gray-600:hover{color:#4b5563}
-.hover:text-gray-900:hover{color:#111827}
-.hover:text-green-700:hover{color:#15803d}
-.hover:border-green-400:hover{border-color:#4ade80}
-.hover:underline:hover{text-decoration:underline}
-.hover:shadow-md:hover{box-shadow:0 4px 6px rgba(0,0,0,0.07)}
-.group:hover .group-hover:block{display:block}
-
-/* ── Focus ── */
-.focus:outline-none:focus{outline:none}
-.focus:ring-2:focus{box-shadow:0 0 0 2px rgba(26,107,60,0.3)}
-.focus:border-green-600:focus{border-color:#16a34a}
-
-/* ── Animations ── */
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes ping{75%,100%{transform:scale(2);opacity:0}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
-@keyframes bounce{0%,100%{transform:translateY(-25%);animation-timing-function:cubic-bezier(0.8,0,1,1)}50%{transform:none;animation-timing-function:cubic-bezier(0,0,0.2,1)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.animate-spin{animation:spin 1s linear infinite}
-.animate-ping{animation:ping 1s cubic-bezier(0,0,0.2,1) infinite}
-.animate-pulse{animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite}
-.animate-bounce{animation:bounce 1s infinite}
-.animate-fadeIn{animation:fadeIn 0.2s ease}
-
-/* ── Spinner utility ── */
-.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle}
-
-/* ── Last / First child ── */
-.last:border-0:last-child{border-width:0}
-.first:rounded-t-lg:first-child{border-top-left-radius:8px;border-top-right-radius:8px}
-.last:rounded-b-lg:last-child{border-bottom-left-radius:8px;border-bottom-right-radius:8px}
-
-/* ── Misc ── */
-.list-none{list-style:none}.list-disc{list-style:disc}.list-decimal{list-style:decimal}
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
-.not-italic{font-style:normal}.italic{font-style:italic}
-.font-mono{font-family:'DM Mono','Courier New',monospace}
-
-/* ── SMP component defaults ── */
-.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;background:#1a6b3c;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.15s}
-.btn-primary:hover:not(:disabled){background:#155c32}
+input,select,textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:14px;color:#0f1117;background:#fff;outline:none;transition:border-color 0.15s}
+input:focus,select:focus{border-color:#7c3aed}
+input[type=checkbox]{width:auto;padding:0;cursor:pointer;accent-color:#7c3aed}
+/* Sidebar (admin uses purple theme) */
+aside.admin-sidebar{width:240px;background:#111827}
+/* Hover */
+.hover\:bg-gray-700:hover{background:#374151}
+.hover\:bg-gray-800:hover{background:#1f2937}
+.hover\:bg-purple-50:hover{background:#faf5ff}
+.hover\:text-white:hover{color:#fff}
+.hover\:underline:hover{text-decoration:underline}
+.hover\:shadow-md:hover{box-shadow:0 4px 6px rgba(0,0,0,0.07)}
+/* Components */
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 18px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.15s}
+.btn-primary:hover:not(:disabled){background:#6d28d9}
 .btn-primary:disabled{opacity:0.6;cursor:not-allowed}
-.btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;background:#fff;color:#374151;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.15s}
+.btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 18px;background:#fff;color:#374151;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s}
 .btn-secondary:hover{background:#f9fafb}
+.btn-danger{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:7px 14px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:background 0.15s}
+.btn-danger:hover{background:#b91c1c}
 .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px}
 .badge{display:inline-block;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:600}
-.toast{position:fixed;bottom:20px;right:20px;z-index:9999;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.15);transition:all 0.3s;background:#0f1117}
+/* Grade bar */
+.grade-bar-wrap{height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden}
+.grade-bar-fill{height:100%;border-radius:4px;transition:width 0.4s}
+/* Tabs */
+.tab-btn{padding:8px 16px;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;border:none;background:transparent;color:#6b7280;transition:all 0.15s}
+.tab-btn.active{background:#f3e8ff;color:#7c3aed;font-weight:600}
+.tab-btn:hover:not(.active){background:#f9fafb;color:#374151}
+/* Animations */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.animate-fadeIn{animation:fadeIn 0.2s ease}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle}
+.spinner-sm{display:inline-block;width:13px;height:13px;border:2px solid rgba(124,58,237,0.3);border-top-color:#7c3aed;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle}
+/* View-as-school banner */
+#view-as-banner{display:none;position:sticky;top:0;z-index:20;background:#f59e0b;color:#78350f;padding:8px 16px;font-size:13px;font-weight:600;text-align:center;border-bottom:2px solid #d97706}
+/* Status badges */
+.status-active{background:#dcfce7;color:#166534}
+.status-suspended{background:#fee2e2;color:#991b1b}
+.status-trial{background:#fef9c3;color:#854d0e}
+.status-offboarded{background:#f3f4f6;color:#6b7280}
+.plan-trial{background:#fef9c3;color:#854d0e}
+.plan-lite{background:#dbeafe;color:#1e40af}
+.plan-full{background:#dcfce7;color:#166534}
 </style>
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-gray-50">
 <div class="min-h-screen flex">
-  <aside class="w-56 bg-gray-900 text-white flex flex-col fixed inset-y-0 z-30">
-    <div class="p-4 border-b border-gray-700"><div class="flex items-center gap-2"><div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center text-xs font-bold">S</div><span class="font-semibold text-sm">SchoolMasterPro</span></div><p class="text-xs text-gray-400 mt-1" id="school-name-nav">Loading...</p></div>
+  <!-- Admin sidebar (purple theme, different from school operator sidebar) -->
+  <aside class="admin-sidebar w-60 text-white flex flex-col fixed inset-y-0 z-30">
+    <div class="p-4 border-b border-gray-700">
+      <div class="flex items-center gap-2">
+        <div style="width:32px;height:32px;background:#7c3aed;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">A</div>
+        <span class="font-semibold text-sm">SchoolMasterPro</span>
+      </div>
+      <p class="text-xs text-gray-400 mt-1">Platform Administration</p>
+      <span style="display:inline-block;background:#7c3aed;color:#ede9fe;font-size:9px;font-weight:700;letter-spacing:0.08em;padding:2px 8px;border-radius:10px;margin-top:6px;text-transform:uppercase">Super Admin</span>
+    </div>
     <nav class="flex-1 p-3 space-y-1 text-sm overflow-y-auto">
-      <a href="index.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📊 Dashboard</a>
-      <a href="students.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👥 Students</a>
-      <a href="scores.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📝 Scores</a>
-      <a href="fees.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">💰 Fees</a>
-      <a href="receipts.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🧾 Receipts</a>
-      <a href="reports.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📄 Reports</a>
-      <a href="staff.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">👤 Staff</a>
-      <a href="bulk-upload.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📥 Bulk Upload</a>
-      <a href="notifications.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔔 Notifications</a>
-      <a href="documents.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📁 Documents</a>
-      <a href="promotion.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🎓 Promotion</a>
-      <a href="term-settings.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">⚙️ Settings</a>
-      <a href="term-comparison.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📈 Term Compare</a>
-      <a href="transcript.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">📜 Transcript</a>
-      <a href="audit.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-700 text-gray-300">🔍 Audit Log</a>
+      <button onclick="showTab('schools')" id="tab-schools" class="tab-btn w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 active">🏫 Schools</button>
+      <button onclick="showTab('support')" id="tab-support" class="tab-btn w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700">🔍 Support Access</button>
+      <button onclick="showTab('analytics')" id="tab-analytics" class="tab-btn w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700">📊 Usage Analytics</button>
     </nav>
-    <div class="p-3 border-t border-gray-700"><button onclick="SMP.auth.signOut().then(()=>location.href='login.html')" class="w-full text-left flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white text-sm">🚪 Sign Out</button></div>
+    <div class="p-3 border-t border-gray-700">
+      <button onclick="doSignOut()" class="w-full text-left flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white text-sm rounded-lg hover:bg-gray-700">🚪 Sign Out</button>
+    </div>
   </aside>
-  <main class="ml-56 flex-1 p-6" id="page-main">
-    <div class="max-w-5xl mx-auto">
-      <h1 class="text-2xl font-bold text-gray-900 mb-2">Platform Admin</h1>
-      <p class="text-gray-400 text-sm mb-6" id="page-subtitle">Loading...</p>
-      <div id="page-content" class="bg-white rounded-xl border border-gray-200 p-6 text-gray-500 text-sm">Loading content...</div>
+
+  <!-- Main content -->
+  <main class="ml-60 flex-1">
+    <!-- View-as-school banner -->
+    <div id="view-as-banner">
+      👁 VIEWING AS <strong id="view-as-name"></strong> — READ ONLY &nbsp;
+      <button onclick="exitViewAs()" style="background:#78350f;color:#fff;border:none;padding:3px 12px;border-radius:6px;font-size:12px;cursor:pointer">Exit View</button>
+    </div>
+
+    <div class="p-6">
+      <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900" id="page-title">School Oversight</h1>
+            <p class="text-gray-500 text-sm mt-1" id="page-subtitle">All schools on the platform</p>
+          </div>
+          <div id="page-actions"></div>
+        </div>
+
+        <!-- Tab content panels -->
+        <div id="panel-schools" class="animate-fadeIn"></div>
+        <div id="panel-support" class="hidden animate-fadeIn"></div>
+        <div id="panel-analytics" class="hidden animate-fadeIn"></div>
+      </div>
     </div>
   </main>
 </div>
+
+<!-- School detail modal -->
+<div id="school-modal" class="fixed inset-0 bg-gray-900 z-50 hidden" style="background:rgba(0,0,0,0.6)">
+  <div style="position:absolute;top:0;right:0;bottom:0;width:480px;background:#fff;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,0.15)">
+    <div class="flex items-center justify-between p-5 border-b border-gray-200">
+      <h3 class="font-semibold text-gray-900" id="modal-school-name">School Detail</h3>
+      <button onclick="closeModal()" class="text-gray-400 hover:text-gray-700 text-xl">✕</button>
+    </div>
+    <div id="modal-body" class="p-5"></div>
+  </div>
+</div>
+
+<script src="supabase.min.js"></script>
+<script src="smp-supabase.js"></script>
+<script src="smp-offline.js"></script>
 <script>
-async function initPage() {
+// ── Auth guard ───────────────────────────────────────────────
+let _adminVerified = false;
+
+async function guardAdmin() {
   const s = await SMP.auth.getSession();
-  if (!s) { window.location.href = 'login.html'; return; }
-  const school = await SMP.school.get();
-  if (school) document.getElementById('school-name-nav').textContent = school.name;
-  document.getElementById('page-subtitle').textContent = school?.name || '';
-  document.getElementById('page-content').innerHTML = '<div class="text-center py-12 text-gray-400"><div class="text-4xl mb-3">🔧</div><p class="font-medium text-gray-600">Platform Admin module loaded.</p><p class="text-sm mt-2">This page is connected to your Supabase backend. All data operations use smp-supabase.js APIs.</p></div>';
+  if (!s) { window.location.href = 'admin-login.html'; return false; }
+  const { data: isAdmin, error } = await SMP.client.rpc('is_platform_admin');
+  if (error || !isAdmin) {
+    await SMP.auth.signOut();
+    window.location.href = 'admin-login.html';
+    return false;
+  }
+  _adminVerified = true;
+  return true;
 }
-document.addEventListener('DOMContentLoaded', initPage);
+
+async function doSignOut() {
+  await SMP.auth.signOut();
+  window.location.href = 'admin-login.html';
+}
+
+// ── Utility ──────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  let t = document.getElementById('smp-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'smp-toast';
+    t.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:9999;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.15);transition:all 0.3s;opacity:0';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.background = type === 'error' ? '#dc2626' : type === 'warning' ? '#d97706' : '#111827';
+  requestAnimationFrame(() => { t.style.opacity = '1'; });
+  clearTimeout(t._t);
+  t._t = setTimeout(() => { t.style.opacity = '0'; }, 3500);
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-NG', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function planBadge(p) {
+  const cls = { trial: 'plan-trial', lite: 'plan-lite', full: 'plan-full' }[p] || 'plan-trial';
+  return `<span class="badge ${cls}">${(p||'trial').toUpperCase()}</span>`;
+}
+
+function statusBadge(s) {
+  const cls = { active: 'status-active', suspended: 'status-suspended', offboarded: 'status-offboarded', trial: 'status-trial' }[s] || 'status-trial';
+  return `<span class="badge ${cls}">${s||'—'}</span>`;
+}
+
+// ── Tab system ───────────────────────────────────────────────
+let _currentTab = 'schools';
+
+function showTab(name) {
+  ['schools','support','analytics'].forEach(t => {
+    const panel = document.getElementById('panel-' + t);
+    const btn   = document.getElementById('tab-' + t);
+    if (panel) panel.classList.toggle('hidden', t !== name);
+    if (btn) {
+      btn.style.background = t === name ? 'rgba(124,58,237,0.15)' : '';
+      btn.style.color      = t === name ? '#c4b5fd' : '';
+      btn.style.fontWeight = t === name ? '600' : '';
+    }
+  });
+  _currentTab = name;
+  const titles = { schools: 'School Oversight', support: 'Support Access', analytics: 'Usage Analytics' };
+  const subs   = { schools: 'All schools on the platform', support: 'View a school as a read-only observer', analytics: 'Platform-wide usage metrics' };
+  document.getElementById('page-title').textContent = titles[name];
+  document.getElementById('page-subtitle').textContent = subs[name];
+  document.getElementById('page-actions').innerHTML = '';
+}
+
+// ── SECTION 1: Schools ────────────────────────────────────────
+let _allSchools = [];
+
+async function loadSchools() {
+  const panel = document.getElementById('panel-schools');
+  panel.innerHTML = '<div class="text-center py-12 text-gray-400"><span class="spinner-sm"></span> Loading schools…</div>';
+
+  try {
+    const [schoolsResult, healthResult] = await Promise.all([
+      SMP.platform.listSchools(),
+      SMP.platform.getHealthScores().catch(() => ({ data: null })),
+    ]);
+
+    if (schoolsResult.error) throw schoolsResult.error;
+    _allSchools = schoolsResult.data || [];
+    const health = healthResult.data || {};
+
+    panel.innerHTML = buildSchoolsPanel(_allSchools, health);
+  } catch (e) {
+    panel.innerHTML = `<div class="text-center py-12 text-red-500">Error loading schools: ${e.message}</div>`;
+  }
+}
+
+function buildSchoolsPanel(schools, health) {
+  const stats = {
+    total: schools.length,
+    active: schools.filter(s=>s.status==='active').length,
+    trial:  schools.filter(s=>s.plan==='trial'||s.status==='trial').length,
+    suspended: schools.filter(s=>s.status==='suspended').length,
+  };
+
+  return `
+    <!-- Summary cards -->
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      <div class="card p-4"><div class="text-xs text-gray-400 uppercase tracking-wide">Total Schools</div><div class="text-2xl font-bold text-gray-900 mt-1">${stats.total}</div></div>
+      <div class="card p-4"><div class="text-xs text-gray-400 uppercase tracking-wide">Active</div><div class="text-2xl font-bold text-green-700 mt-1">${stats.active}</div></div>
+      <div class="card p-4"><div class="text-xs text-gray-400 uppercase tracking-wide">On Trial</div><div class="text-2xl font-bold text-yellow-600 mt-1">${stats.trial}</div></div>
+      <div class="card p-4"><div class="text-xs text-gray-400 uppercase tracking-wide">Suspended</div><div class="text-2xl font-bold text-red-600 mt-1">${stats.suspended}</div></div>
+    </div>
+
+    <!-- Search + filters -->
+    <div class="card p-4 mb-4 flex gap-3 flex-wrap">
+      <input type="text" id="school-search" placeholder="Search schools…" class="flex-1 min-w-48 border border-gray-200 rounded-lg px-3 py-2 text-sm" oninput="filterSchools(this.value)" style="width:auto"/>
+      <select id="school-status-filter" class="border border-gray-200 rounded-lg px-3 py-2 text-sm" onchange="filterSchools(document.getElementById('school-search').value)" style="width:auto">
+        <option value="">All statuses</option>
+        <option value="active">Active</option>
+        <option value="trial">Trial</option>
+        <option value="suspended">Suspended</option>
+        <option value="offboarded">Offboarded</option>
+      </select>
+      <select id="school-plan-filter" class="border border-gray-200 rounded-lg px-3 py-2 text-sm" onchange="filterSchools(document.getElementById('school-search').value)" style="width:auto">
+        <option value="">All plans</option>
+        <option value="trial">Trial</option>
+        <option value="lite">Lite</option>
+        <option value="full">Full</option>
+      </select>
+    </div>
+
+    <!-- Schools table -->
+    <div class="card overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="text-left px-4 py-3 text-gray-500 font-medium">School</th>
+            <th class="text-left px-4 py-3 text-gray-500 font-medium">Plan</th>
+            <th class="text-left px-4 py-3 text-gray-500 font-medium">Status</th>
+            <th class="text-left px-4 py-3 text-gray-500 font-medium">State</th>
+            <th class="text-left px-4 py-3 text-gray-500 font-medium">Health</th>
+            <th class="text-left px-4 py-3 text-gray-500 font-medium">Created</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody id="schools-body">${buildSchoolRows(_allSchools, health)}</tbody>
+      </table>
+    </div>`;
+}
+
+function buildSchoolRows(schools, health) {
+  if (!schools.length) return '<tr><td colspan="7" class="text-center py-10 text-gray-400">No schools found</td></tr>';
+  return schools.map(s => {
+    const h = health && health[s.id] ? health[s.id] : null;
+    const healthPct = h ? Math.round(h.score || 0) : null;
+    const healthColor = healthPct === null ? '#d1d5db' : healthPct >= 70 ? '#16a34a' : healthPct >= 40 ? '#f59e0b' : '#ef4444';
+    return `<tr class="border-b border-gray-50 hover:bg-gray-50">
+      <td class="px-4 py-3">
+        <div class="font-medium text-gray-900">${s.name || '—'}</div>
+        <div class="text-xs text-gray-400 font-mono">${s.school_code || s.id?.slice(0,8) || ''}</div>
+      </td>
+      <td class="px-4 py-3">${planBadge(s.plan)}</td>
+      <td class="px-4 py-3">${statusBadge(s.status)}</td>
+      <td class="px-4 py-3 text-xs text-gray-600">${s.state || '—'}</td>
+      <td class="px-4 py-3">
+        ${healthPct !== null ? `
+          <div class="flex items-center gap-2">
+            <div class="grade-bar-wrap" style="width:60px"><div class="grade-bar-fill" style="width:${healthPct}%;background:${healthColor}"></div></div>
+            <span class="text-xs font-medium" style="color:${healthColor}">${healthPct}%</span>
+          </div>` : '<span class="text-xs text-gray-400">—</span>'}
+      </td>
+      <td class="px-4 py-3 text-xs text-gray-500">${fmtDate(s.created_at)}</td>
+      <td class="px-4 py-3">
+        <div class="flex gap-2">
+          <button onclick="openSchoolDetail('${s.id}')" class="text-xs text-blue-600 hover:underline">Detail</button>
+          <select onchange="changePlan('${s.id}',this.value)" class="text-xs border border-gray-200 rounded px-1 py-0.5" style="width:auto">
+            <option value="">Plan…</option>
+            <option value="trial"${s.plan==='trial'?' selected':''}>Trial</option>
+            <option value="lite"${s.plan==='lite'?' selected':''}>Lite</option>
+            <option value="full"${s.plan==='full'?' selected':''}>Full</option>
+          </select>
+          <select onchange="changeStatus('${s.id}',this.value)" class="text-xs border border-gray-200 rounded px-1 py-0.5" style="width:auto">
+            <option value="">Status…</option>
+            <option value="active"${s.status==='active'?' selected':''}>Active</option>
+            <option value="suspended"${s.status==='suspended'?' selected':''}>Suspend</option>
+            <option value="offboarded"${s.status==='offboarded'?' selected':''}>Offboard</option>
+          </select>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterSchools(q) {
+  const statusF = document.getElementById('school-status-filter')?.value || '';
+  const planF   = document.getElementById('school-plan-filter')?.value || '';
+  let filtered  = _allSchools;
+  if (q) {
+    const lq = q.toLowerCase();
+    filtered = filtered.filter(s =>
+      (s.name||'').toLowerCase().includes(lq) ||
+      (s.school_code||'').toLowerCase().includes(lq) ||
+      (s.state||'').toLowerCase().includes(lq)
+    );
+  }
+  if (statusF) filtered = filtered.filter(s => s.status === statusF);
+  if (planF)   filtered = filtered.filter(s => s.plan === planF);
+  const body = document.getElementById('schools-body');
+  if (body) body.innerHTML = buildSchoolRows(filtered, {});
+}
+
+async function changePlan(schoolId, plan) {
+  if (!plan) return;
+  if (!confirm(`Change plan to "${plan}"?`)) return;
+  const { error } = await SMP.platform.updateSchoolPlan(schoolId, plan);
+  if (error) { showToast('Error: ' + error.message, 'error'); return; }
+  showToast('Plan updated.');
+  const s = _allSchools.find(x => x.id === schoolId);
+  if (s) s.plan = plan;
+  const body = document.getElementById('schools-body');
+  if (body) body.innerHTML = buildSchoolRows(_allSchools, {});
+}
+
+async function changeStatus(schoolId, status) {
+  if (!status) return;
+  const label = { suspended: 'suspend', offboarded: 'offboard', active: 'reactivate' }[status] || status;
+  if (!confirm(`Are you sure you want to ${label} this school?`)) return;
+  const { error } = await SMP.platform.updateSchoolStatus(schoolId, status);
+  if (error) { showToast('Error: ' + error.message, 'error'); return; }
+  showToast('Status updated.');
+  const s = _allSchools.find(x => x.id === schoolId);
+  if (s) s.status = status;
+  const body = document.getElementById('schools-body');
+  if (body) body.innerHTML = buildSchoolRows(_allSchools, {});
+}
+
+// ── School detail modal ──────────────────────────────────────
+async function openSchoolDetail(schoolId) {
+  const modal = document.getElementById('school-modal');
+  const body  = document.getElementById('modal-body');
+  modal.classList.remove('hidden');
+  body.innerHTML = '<div class="text-center py-8 text-gray-400"><span class="spinner-sm"></span></div>';
+
+  try {
+    const { data, error } = await SMP.client.rpc('admin_view_school', { p_school_id: schoolId });
+    if (error) throw error;
+
+    const school  = data.school || {};
+    const stats   = data.stats || {};
+    const audit   = data.recent_audit || [];
+    document.getElementById('modal-school-name').textContent = school.name || 'School Detail';
+
+    body.innerHTML = `
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-gray-50 rounded-lg p-3"><div class="text-xs text-gray-400">Students</div><div class="text-xl font-bold">${data.student_count||'—'}</div></div>
+          <div class="bg-gray-50 rounded-lg p-3"><div class="text-xs text-gray-400">Staff</div><div class="text-xl font-bold">${data.staff_count||'—'}</div></div>
+          <div class="bg-green-50 rounded-lg p-3"><div class="text-xs text-gray-400">Plan</div><div class="mt-1">${planBadge(school.plan)}</div></div>
+          <div class="bg-gray-50 rounded-lg p-3"><div class="text-xs text-gray-400">Status</div><div class="mt-1">${statusBadge(school.status)}</div></div>
+        </div>
+        <div class="border-t border-gray-100 pt-4">
+          <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">School Info</div>
+          <div class="text-sm space-y-1">
+            <div><span class="text-gray-400">Code: </span>${school.school_code||'—'}</div>
+            <div><span class="text-gray-400">State: </span>${school.state||'—'}</div>
+            <div><span class="text-gray-400">Created: </span>${fmtDate(school.created_at)}</div>
+          </div>
+        </div>
+        <div class="border-t border-gray-100 pt-4">
+          <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Recent Audit Log</div>
+          ${audit.length ? audit.slice(0,8).map(l=>`
+            <div class="flex items-center gap-2 py-1.5 border-b border-gray-50 text-sm">
+              <span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-xs font-mono">${l.action||''}</span>
+              <span class="text-gray-600 flex-1 truncate">${l.entity_type||''}${l.entity_id?(' #'+l.entity_id.slice(0,8)):''}</span>
+              <span class="text-xs text-gray-400">${fmtDate(l.created_at)}</span>
+            </div>`).join('')
+          : '<p class="text-xs text-gray-400">No activity recorded yet.</p>'}
+        </div>
+        <div class="pt-2">
+          <button onclick="startViewAs('${schoolId}','${(school.name||'').replace(/'/g,'')}')" class="btn-primary w-full">👁 View as this school (read-only)</button>
+        </div>
+      </div>`;
+  } catch (e) {
+    body.innerHTML = `<div class="text-red-500 text-sm">Error: ${e.message}</div>`;
+  }
+}
+
+function closeModal() {
+  document.getElementById('school-modal').classList.add('hidden');
+}
+
+// ── SECTION 2: Support Access ─────────────────────────────────
+async function loadSupport() {
+  const panel = document.getElementById('panel-support');
+  const schools = _allSchools.length ? _allSchools : (await SMP.platform.listSchools().then(r=>r.data||[]));
+  if (!_allSchools.length) _allSchools = schools;
+
+  panel.innerHTML = `
+    <div class="card p-6 mb-4">
+      <h3 class="font-semibold text-gray-900 mb-1">View as School</h3>
+      <p class="text-sm text-gray-500 mb-4">Select a school to view their data in read-only mode. A banner will indicate you are in view-as mode.</p>
+      <div class="flex gap-3">
+        <select id="view-as-select" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm">
+          <option value="">Select a school…</option>
+          ${schools.map(s=>`<option value="${s.id}">${s.name} (${s.school_code||s.id.slice(0,8)})</option>`).join('')}
+        </select>
+        <button onclick="startViewAsFromSelect()" class="btn-primary">View School</button>
+      </div>
+    </div>
+    <div class="card p-6">
+      <h3 class="font-semibold text-gray-900 mb-1">Cross-School Audit Log</h3>
+      <p class="text-sm text-gray-500 mb-4">Search audit events across all schools (platform admin only).</p>
+      <div class="flex gap-3 mb-4 flex-wrap">
+        <select id="audit-school-sel" class="border border-gray-200 rounded-lg px-3 py-2 text-sm" style="width:auto">
+          <option value="">All schools</option>
+          ${schools.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}
+        </select>
+        <input type="text" id="audit-action-filter" placeholder="Action (e.g. INSERT)" class="border border-gray-200 rounded-lg px-3 py-2 text-sm" style="width:180px"/>
+        <button onclick="loadCrossAudit()" class="btn-secondary">Search</button>
+      </div>
+      <div id="cross-audit-results" class="text-sm text-gray-400">Select a school or search to view audit logs.</div>
+    </div>`;
+}
+
+function startViewAsFromSelect() {
+  const sel = document.getElementById('view-as-select');
+  if (!sel.value) { showToast('Select a school first', 'error'); return; }
+  const school = _allSchools.find(s => s.id === sel.value);
+  startViewAs(sel.value, school ? school.name : 'Unknown School');
+}
+
+function startViewAs(schoolId, schoolName) {
+  const banner = document.getElementById('view-as-banner');
+  document.getElementById('view-as-name').textContent = schoolName;
+  banner.style.display = 'block';
+  closeModal();
+  showToast(`Now viewing as "${schoolName}" — read-only mode.`, 'warning');
+  // Store in session for reference (doesn't actually change data access —
+  // the school operator pages would need p_school_id support to enforce this)
+  sessionStorage.setItem('smp_view_as_id',   schoolId);
+  sessionStorage.setItem('smp_view_as_name', schoolName);
+}
+
+function exitViewAs() {
+  document.getElementById('view-as-banner').style.display = 'none';
+  sessionStorage.removeItem('smp_view_as_id');
+  sessionStorage.removeItem('smp_view_as_name');
+  showToast('Exited view-as mode.');
+}
+
+async function loadCrossAudit() {
+  const schoolId = document.getElementById('audit-school-sel')?.value || null;
+  const action   = document.getElementById('audit-action-filter')?.value.trim() || null;
+  const el = document.getElementById('cross-audit-results');
+  el.innerHTML = '<span class="spinner-sm"></span>';
+
+  try {
+    const params = { p_limit: 30 };
+    if (schoolId) params.p_school_id = schoolId;
+    if (action)   params.p_action    = action;
+    const { data, error } = await SMP.client.rpc('get_audit_logs', params);
+    if (error) throw error;
+    const logs = (data && data.logs) ? data.logs : (Array.isArray(data) ? data : []);
+    if (!logs.length) { el.innerHTML = '<p class="text-gray-400">No audit events found.</p>'; return; }
+    el.innerHTML = `<div class="divide-y">${logs.map(l=>`
+      <div class="flex items-center gap-3 py-2 text-xs">
+        <span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-mono">${l.action||''}</span>
+        <span class="text-gray-700 flex-1">${l.user_name||'system'} — ${l.entity_type||''}${l.entity_id?' #'+l.entity_id.slice(0,8):''}</span>
+        <span class="text-gray-400">${fmtDate(l.created_at)}</span>
+      </div>`).join('')}</div>`;
+  } catch (e) {
+    el.innerHTML = `<span class="text-red-500">Error: ${e.message}</span>`;
+  }
+}
+
+// ── SECTION 3: Analytics ──────────────────────────────────────
+async function loadAnalytics() {
+  const panel = document.getElementById('panel-analytics');
+  panel.innerHTML = `
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-sm text-gray-600">Time window:</span>
+      ${[7,30,90].map(d=>`<button onclick="loadAnalyticsWindow(${d})" id="aw-${d}" class="px-3 py-1.5 rounded-lg text-sm border ${d===30?'bg-purple-100 text-purple-700 border-purple-200 font-semibold':'bg-white border-gray-200 text-gray-600'}">${d} days</button>`).join('')}
+    </div>
+    <div id="analytics-content">
+      <div class="text-center py-12 text-gray-400"><span class="spinner-sm"></span> Loading analytics…</div>
+    </div>`;
+  await loadAnalyticsWindow(30);
+}
+
+async function loadAnalyticsWindow(days) {
+  [7,30,90].forEach(d => {
+    const b = document.getElementById('aw-'+d);
+    if (b) {
+      b.className = 'px-3 py-1.5 rounded-lg text-sm border ' + (d===days ? 'bg-purple-100 text-purple-700 border-purple-200 font-semibold' : 'bg-white border-gray-200 text-gray-600');
+    }
+  });
+
+  const content = document.getElementById('analytics-content');
+  if (!content) return;
+  content.innerHTML = '<div class="text-center py-8 text-gray-400"><span class="spinner-sm"></span></div>';
+
+  try {
+    const { data, error } = await SMP.platform.getUsageSummary(days);
+    if (error) throw error;
+
+    // getUsageSummary returns an array of per-school usage rows
+    const rows = Array.isArray(data) ? data : (data ? [data] : []);
+    const totalLogins  = rows.reduce((s, r) => s + (r.login_count || 0), 0);
+    const totalScores  = rows.reduce((s, r) => s + (r.score_entries || 0), 0);
+    const totalFees    = rows.reduce((s, r) => s + (r.fee_events || 0), 0);
+    const totalReports = rows.reduce((s, r) => s + (r.reports_generated || 0), 0);
+
+    const maxLogins = Math.max(...rows.map(r=>r.login_count||0), 1);
+
+    content.innerHTML = `
+      <!-- Platform totals -->
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="card p-4"><div class="text-xs text-gray-400 uppercase tracking-wide">Logins (${days}d)</div><div class="text-2xl font-bold text-gray-900 mt-1">${totalLogins}</div></div>
+        <div class="card p-4"><div class="text-xs text-gray-400 uppercase tracking-wide">Score Entries</div><div class="text-2xl font-bold text-gray-900 mt-1">${totalScores}</div></div>
+        <div class="card p-4"><div class="text-xs text-gray-400 uppercase tracking-wide">Fee Events</div><div class="text-2xl font-bold text-green-700 mt-1">${totalFees}</div></div>
+        <div class="card p-4"><div class="text-xs text-gray-400 uppercase tracking-wide">Reports Generated</div><div class="text-2xl font-bold text-blue-700 mt-1">${totalReports}</div></div>
+      </div>
+
+      <!-- Per-school breakdown -->
+      <div class="card overflow-hidden mb-6">
+        <div class="px-5 py-4 border-b border-gray-100"><h3 class="font-semibold text-gray-900">Per-School Activity (${days}-day window)</h3></div>
+        ${rows.length === 0 ? '<div class="p-6 text-center text-gray-400">No usage data available.</div>' : `
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">School</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Logins</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Scores</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Fee Events</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Reports</th>
+              <th class="text-left px-4 py-3 text-gray-500 font-medium">Activity</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y">
+            ${rows.sort((a,b)=>(b.login_count||0)-(a.login_count||0)).map(r => {
+              const pct = Math.round((r.login_count||0)/maxLogins*100);
+              return `<tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 font-medium text-gray-900">${r.school_name||r.school_id?.slice(0,8)||'—'}</td>
+                <td class="px-4 py-3 text-gray-700">${r.login_count||0}</td>
+                <td class="px-4 py-3 text-gray-700">${r.score_entries||0}</td>
+                <td class="px-4 py-3 text-gray-700">${r.fee_events||0}</td>
+                <td class="px-4 py-3 text-gray-700">${r.reports_generated||0}</td>
+                <td class="px-4 py-3" style="width:140px">
+                  <div class="grade-bar-wrap" style="width:120px">
+                    <div class="grade-bar-fill" style="width:${pct}%;background:#7c3aed"></div>
+                  </div>
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>`}
+      </div>`;
+  } catch (e) {
+    content.innerHTML = `<div class="text-red-500 text-sm p-6">Error loading analytics: ${e.message}</div>`;
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────
+async function init() {
+  const ok = await guardAdmin();
+  if (!ok) return;
+
+  // Restore view-as state if any
+  const viewAsName = sessionStorage.getItem('smp_view_as_name');
+  if (viewAsName) {
+    document.getElementById('view-as-name').textContent = viewAsName;
+    document.getElementById('view-as-banner').style.display = 'block';
+  }
+
+  await loadSchools();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+// Tab click handlers also load data on demand
+const _origShowTab = showTab;
+window.showTab = function(name) {
+  _origShowTab(name);
+  if (name === 'support'   && document.getElementById('panel-support').innerHTML   === '') loadSupport();
+  if (name === 'analytics' && document.getElementById('panel-analytics').innerHTML === '') loadAnalytics();
+};
 </script>
-  <script src="supabase.min.js"></script>
-  <script src="smp-supabase.js"></script>
-</body></html>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "name": "SchoolMasterPro",
+  "short_name": "SMP",
+  "description": "Nigerian Secondary School Management Platform",
+  "start_url": "/login",
+  "display": "standalone",
+  "background_color": "#0f1117",
+  "theme_color": "#1a6b3c",
+  "lang": "en-NG",
+  "orientation": "portrait-primary",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Students",
+      "short_name": "Students",
+      "url": "/students",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Scores",
+      "short_name": "Scores",
+      "url": "/scores",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    }
+  ]
+}
